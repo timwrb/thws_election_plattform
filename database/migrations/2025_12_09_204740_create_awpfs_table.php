@@ -18,7 +18,9 @@ return new class extends Migration
             $table->text('content')->nullable();
 
             $table->integer('credits')->default(5);
-            $table->enum(Language::class);
+
+            $table->string('language');
+            $table->string('exam_type');
 
             $table->timestamps();
         });
