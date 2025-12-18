@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasOrderedUserChoices;
 use App\Enums\ExamType;
 use App\Enums\Language;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,7 @@ class Awpf extends Model
 {
     /** @use HasFactory<\Database\Factories\AwpfFactory> */
     use HasFactory;
+    use HasOrderedUserChoices;
 
     protected function casts(): array
     {

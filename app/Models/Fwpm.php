@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ExamType;
 use App\Enums\Language;
+use App\Traits\HasOrderedUserChoices;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -12,6 +13,7 @@ class Fwpm extends Model
 {
     /** @use HasFactory<\Database\Factories\FwpmFactory> */
     use HasFactory;
+    use HasOrderedUserChoices;
 
     protected function casts(): array
     {
