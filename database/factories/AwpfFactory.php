@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\ExamType;
+use App\Enums\Language;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,16 @@ class AwpfFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->words(3, true),
+            'content' => fake()->paragraphs(3, true),
+            'credits' => fake()->randomElement([5, 10, 15]),
+            'language' => fake()->randomElement(Language::cases()),
+            'exam_type' => fake()->randomElement(ExamType::cases()),
         ];
+    }
+
+    public function withSchedules(int $count = 2): static
+    {
+        return $this->hasSchedules($count);
     }
 }

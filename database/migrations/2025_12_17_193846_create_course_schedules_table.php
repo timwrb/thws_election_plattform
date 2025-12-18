@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('awpfs', function (Blueprint $table) {
+        Schema::create('course_schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('content')->nullable();
-
-            $table->integer('credits')->default(5);
-
-            $table->string('language');
-            $table->string('exam_type');
-
+            $table->morphs('schedulable');
+            $table->string('day_of_week');
+            $table->time('start_time');
+            $table->unsignedInteger('duration_minutes');
             $table->timestamps();
+
+            $table->index(['schedulable_type', 'schedulable_id', 'day_of_week'], 'schedulable_day_index');
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('awpfs');
+        Schema::dropIfExists('course_schedules');
     }
 };
