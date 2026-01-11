@@ -1,65 +1,69 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\Awpf;
-use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User as AuthUser;
 
 class AwpfPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    use HandlesAuthorization;
+
+    public function viewAny(AuthUser $authUser): bool
     {
-        return false;
+        return $authUser->can('ViewAny:Awpf');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Awpf $awpf): bool
+    public function view(AuthUser $authUser, Awpf $awpf): bool
     {
-        return false;
+        return $authUser->can('View:Awpf');
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return false;
+        return $authUser->can('Create:Awpf');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Awpf $awpf): bool
+    public function update(AuthUser $authUser, Awpf $awpf): bool
     {
-        return false;
+        return $authUser->can('Update:Awpf');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Awpf $awpf): bool
+    public function delete(AuthUser $authUser, Awpf $awpf): bool
     {
-        return false;
+        return $authUser->can('Delete:Awpf');
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Awpf $awpf): bool
+    public function restore(AuthUser $authUser, Awpf $awpf): bool
     {
-        return false;
+        return $authUser->can('Restore:Awpf');
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Awpf $awpf): bool
+    public function forceDelete(AuthUser $authUser, Awpf $awpf): bool
     {
-        return false;
+        return $authUser->can('ForceDelete:Awpf');
+    }
+
+    public function forceDeleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('ForceDeleteAny:Awpf');
+    }
+
+    public function restoreAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('RestoreAny:Awpf');
+    }
+
+    public function replicate(AuthUser $authUser, Awpf $awpf): bool
+    {
+        return $authUser->can('Replicate:Awpf');
+    }
+
+    public function reorder(AuthUser $authUser): bool
+    {
+        return $authUser->can('Reorder:Awpf');
     }
 }

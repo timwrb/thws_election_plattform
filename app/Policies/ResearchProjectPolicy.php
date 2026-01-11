@@ -8,58 +8,100 @@ use App\Models\User;
 class ResearchProjectPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Students and admins can view all research projects
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        if ($user->hasRole('student')) {
+            return true;
+        }
+
+        return $user->can('ViewAny:ResearchProject');
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Students and admins can view individual projects
      */
     public function view(User $user, ResearchProject $researchProject): bool
     {
-        return false;
+        if ($user->hasRole('student')) {
+            return true;
+        }
+
+        return $user->can('View:ResearchProject');
     }
 
     /**
-     * Determine whether the user can create models.
+     * Students and admins can create research projects
      */
     public function create(User $user): bool
     {
-        return false;
+        if ($user->hasRole('student')) {
+            return true;
+        }
+
+        return $user->can('Create:ResearchProject');
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Users can update projects they created, admins can update any
      */
     public function update(User $user, ResearchProject $researchProject): bool
     {
-        return false;
+        if ($researchProject->isCreatedBy($user)) {
+            return true;
+        }
+
+        return $user->can('Update:ResearchProject');
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Users can delete projects they created (if no enrollments), admins can delete any
      */
     public function delete(User $user, ResearchProject $researchProject): bool
     {
-        return false;
+        if ($user->can('Delete:ResearchProject')) {
+            return true;
+        }
+
+        // Students can only delete their own projects with no enrollments
+        return $researchProject->isCreatedBy($user)
+            && $researchProject->enrollments()->whereIn('status', ['pending', 'confirmed'])->count() === 0;
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Only admins can restore
      */
     public function restore(User $user, ResearchProject $researchProject): bool
     {
-        return false;
+        return $user->can('Restore:ResearchProject');
     }
 
     /**
-     * Determine whether the user can permanently delete the model.
+     * Only admins can force delete
      */
     public function forceDelete(User $user, ResearchProject $researchProject): bool
     {
-        return false;
+        return $user->can('ForceDelete:ResearchProject');
+    }
+
+    /**
+     * Students can enroll in projects with available capacity
+     */
+    public function enroll(User $user, ResearchProject $researchProject): bool
+    {
+        if (! $user->hasRole('student')) {
+            return false;
+        }
+
+        // Get current semester (you may need to implement this logic based on your needs)
+        $currentSemester = $researchProject->semester;
+
+        if (! $currentSemester) {
+            return false;
+        }
+
+        return $researchProject->hasCapacity($currentSemester)
+            && ! $researchProject->isUserEnrolled($user, $currentSemester);
     }
 }
