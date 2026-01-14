@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "thws/election-platform",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
@@ -10,11 +10,9 @@
         "bezhansalleh/filament-language-switch": "^4.0",
         "bezhansalleh/filament-shield": "^4.0",
         "filament/filament": "^4.0",
-        "inertiajs/inertia-laravel": "^2.0",
         "laravel/fortify": "^1.30",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "laravel/wayfinder": "^0.1.9",
         "nunomaduro/essentials": "^1.0",
         "spatie/laravel-permission": "^6.23"
     },
@@ -56,11 +54,6 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
         ],
-        "dev:ssr": [
-            "npm run build:ssr",
-            "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"php artisan inertia:start-ssr\" --names=server,queue,logs,ssr --kill-others"
-        ],
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test --parallel"
@@ -86,12 +79,10 @@
         ],
         "format": [
             "vendor/bin/rector",
-            "vendor/bin/pint",
-            "npm run format"
+            "vendor/bin/pint"
         ],
         "format:check": [
-            "vendor/bin/pint --test",
-            "npm run format:check"
+            "vendor/bin/pint --test"
         ],
         "types": [
             "vendor/bin/phpstan"
