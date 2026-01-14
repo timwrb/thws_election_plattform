@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ExamType;
 use App\Enums\Language;
 use App\Traits\HasOrderedUserChoices;
+use App\Traits\HasSemester;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -26,6 +27,7 @@ class Fwpm extends Model
     use HasFactory;
 
     use HasOrderedUserChoices;
+    use HasSemester;
 
     protected function casts(): array
     {

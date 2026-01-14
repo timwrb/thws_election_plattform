@@ -17,16 +17,4 @@ return [
         'fwpm' => env('ELECTIVES_MAX_FWPM', 3),
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Current Semester
-    |--------------------------------------------------------------------------
-    |
-    | The ID of the currently active semester for enrollments.
-    | Set this to null to require semester selection during enrollment.
-    |
-    */
-
-    'current_semester_id' => env('ELECTIVES_CURRENT_SEMESTER_ID'),
-
 ];

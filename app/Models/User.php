@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Services\SemesterService;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -20,6 +21,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $name
  * @property string $surname
  * @property string $email
+ * @property int|null $start_semester_id
  * @property string $password
  * @property string|null $remember_token
  * @property Carbon|null $created_at
@@ -139,26 +141,29 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * @return HasMany<UserSemester, $this>
+     * @return BelongsTo<Semester, $this>
      */
-    public function userSemesters(): HasMany
+    public function startSemester(): BelongsTo
     {
-        return $this->hasMany(UserSemester::class);
+        return $this->belongsTo(Semester::class, 'start_semester_id');
     }
 
     /**
-     * @return HasOne<UserSemester, $this>
+     * Get the current active semester based on today's date.
      */
-    public function currentUserSemester(): HasOne
+    public function getCurrentSemester(): ?Semester
     {
-        return $this->hasOne(UserSemester::class)
-            ->where('is_current', true)
-            ->with('semester');
+        return app(SemesterService::class)->getCurrentSemester();
     }
 
-    public function getCurrentSemesterInfo(): ?UserSemester
+    /**
+     * Calculate which semester number this user is in based on their start semester.
+     *
+     * Example: If user started in WS23/24 and current semester is WS25/26, returns 5.
+     */
+    public function getSemesterNumber(): ?int
     {
-        return $this->currentUserSemester()->first();
+        return app(SemesterService::class)->calculateSemesterNumber($this);
     }
 
     public function canEnrollInResearchProject(ResearchProject $project, Semester $semester): bool

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasOrderedUserChoices;
+use App\Traits\HasSemester;
 use Database\Factories\ResearchProjectFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -32,6 +33,7 @@ class ResearchProject extends Model
     use HasFactory;
 
     use HasOrderedUserChoices;
+    use HasSemester;
 
     protected $fillable = [
         'title',
@@ -78,15 +80,6 @@ class ResearchProject extends Model
     {
         return $this->hasMany(UserSelection::class, 'elective_choice_id')
             ->where('elective_type', self::class);
-    }
-
-    /**
-     * @param  Builder<ResearchProject>  $query
-     * @return Builder<ResearchProject>
-     */
-    public function scopeForSemester(Builder $query, Semester $semester): Builder
-    {
-        return $query->where('semester_id', $semester->id);
     }
 
     /**
