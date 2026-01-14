@@ -95,7 +95,7 @@ class FwpmForm
                             ->reorderable()
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => isset($state['day_of_week'], $state['start_time'])
-                                ? DayOfWeek::from($state['day_of_week'])->getLabel().' at '.$state['start_time']
+                                ? $state['day_of_week']->getLabel().' at '.$state['start_time']
                                 : null),
                     ]),
             ]);

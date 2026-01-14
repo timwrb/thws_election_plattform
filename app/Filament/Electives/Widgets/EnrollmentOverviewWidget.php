@@ -15,6 +15,7 @@ class EnrollmentOverviewWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
 
+    #[\Override]
     protected function getStats(): array
     {
         $semester = $this->getCurrentSemester();
@@ -27,7 +28,7 @@ class EnrollmentOverviewWidget extends BaseWidget
             ];
         }
 
-        $userId = auth()->id();
+        auth()->id();
 
         // Count AWPF selections
         $awpfCount = UserSelection::query()

@@ -11,6 +11,7 @@ class EnrollmentGuideWidget extends Widget
 
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     public function render(): View
     {
         return view('filament.electives.widgets.enrollment-guide-widget');

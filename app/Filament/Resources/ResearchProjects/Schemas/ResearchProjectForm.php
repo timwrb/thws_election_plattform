@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\ResearchProjects\Schemas;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class ResearchProjectForm
@@ -69,13 +69,13 @@ class ResearchProjectForm
                                     ->label('Start Date')
                                     ->native(false)
                                     ->displayFormat('d.m.Y')
-                                    ->maxDate(fn (Get $get) => $get('end_date')),
+                                    ->maxDate(fn (Get $get): mixed => $get('end_date')),
 
                                 DatePicker::make('end_date')
                                     ->label('End Date')
                                     ->native(false)
                                     ->displayFormat('d.m.Y')
-                                    ->minDate(fn (Get $get) => $get('start_date'))
+                                    ->minDate(fn (Get $get): mixed => $get('start_date'))
                                     ->after('start_date'),
                             ]),
                     ]),
