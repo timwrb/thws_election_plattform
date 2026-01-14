@@ -5,6 +5,11 @@ namespace App\Models;
 use App\Enums\Season;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $year
+ * @property Season $season
+ */
 class Semester extends Model
 {
     public $timestamps = false;
@@ -28,9 +33,9 @@ class Semester extends Model
         if ($this->season === Season::Winter) {
             $nextYearShort = substr((string) ($this->year + 1), -2);
 
-            return "{$this->season->value}{$yearShort}/{$nextYearShort}";
+            return "{$this->season->value}$yearShort/{$nextYearShort}";
         }
 
-        return "{$this->season->value}{$yearShort}";
+        return "{$this->season->value}$yearShort";
     }
 }

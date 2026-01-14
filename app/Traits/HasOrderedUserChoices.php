@@ -25,15 +25,13 @@ trait HasOrderedUserChoices
             'elective_choice_id',
             'user_id'
         )
-        ->withPivot(['semester_id', 'parent_elective_choice_id', 'id'])
-        ->withTimestamps();
+            ->withPivot(['semester_id', 'parent_elective_choice_id', 'id'])
+            ->withTimestamps();
     }
 
     /**
      * Get ordered choices for a specific user and semester.
      *
-     * @param  User  $user
-     * @param  Semester  $semester
      * @return Collection<int, User>
      */
     public function getChoicesForUserAndSemester(User $user, Semester $semester): Collection
@@ -47,7 +45,6 @@ trait HasOrderedUserChoices
     /**
      * Get all users with their ordered choices for a specific semester.
      *
-     * @param  Semester  $semester
      * @return Collection<int, User>
      */
     public function getUsersForSemester(Semester $semester): Collection

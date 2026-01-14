@@ -9,10 +9,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $content
+ * @property int $credits
+ * @property Language $language
+ * @property ExamType $exam_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string $formatted_schedules
+ */
 class Fwpm extends Model
 {
     /** @use HasFactory<\Database\Factories\FwpmFactory> */
     use HasFactory;
+
     use HasOrderedUserChoices;
 
     protected function casts(): array
@@ -24,6 +36,9 @@ class Fwpm extends Model
         ];
     }
 
+    /**
+     * @return MorphMany<CourseSchedule, $this>
+     */
     public function schedules(): MorphMany
     {
         return $this->morphMany(CourseSchedule::class, 'schedulable');

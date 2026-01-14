@@ -673,3 +673,219 @@ Fortify is a headless authentication backend that provides authentication routes
 - `Features::updatePasswords()` to let users change their passwords.
 - `Features::resetPasswords()` for password reset via email.
 </laravel-boost-guidelines>
+
+
+=== thws-election-platform rules ===
+
+## THWS Election Platform - System Architecture
+
+This is an academic course selection platform for THWS (Technische Hochschule Würzburg-Schweinfurt) where students register for elective courses and research projects.
+
+### Application Purpose
+- Students browse and select AWPF courses (Allgemeine Wahlpflichtfächer - General Electives)
+- Students browse and select FWPM courses (Fachwahlpflichtmodul - Subject-Specific Electives)
+- Students register for Research Projects
+- Students rank their course selections by priority (1st choice, 2nd choice, etc.)
+- Professors and management create/manage courses, projects, and view student selections
+- No authentication required (development environment uses seeded users)
+
+### Two Filament Panels
+
+#### Admin Panel (`/admin`)
+- **Users**: Professors and administrative staff
+- **Navigation**: Top navigation bar
+- **Resources**: AwpfResource, FwpmResource, ResearchProjectResource
+- **Features**: Full CRUD operations for courses and projects, schedule management, student selection viewing
+- **Authorization**: Uses FilamentShield with Spatie Permission package
+
+#### Electives Panel (`/electives`)
+- **Users**: Students
+- **Purpose**: Student-facing interface for course browsing and selection
+- **Status**: Structure exists, resources need implementation
+- **Widgets**: AccountWidget, FilamentInfoWidget
+
+### Core Models & Relationships
+
+#### User Model
+- Fields: `name`, `surname`, `email`, `password`
+- Uses `HasRoles` trait (Spatie Permission)
+- Implements `FilamentUser` interface
+- Relationships: Polymorphic many-to-many with AWPF/FWPM via `user_selections` table
+
+#### AWPF & FWPM Models
+- **AWPF** = Allgemeine Wahlpflichtfächer (General Elective Courses)
+- **FWPM** = Fachwahlpflichtmodul (Subject-Specific Electives)
+- Both models share identical structure and use `HasOrderedUserChoices` trait
+- Fields:
+  - `name` (string): Course name
+  - `content` (text): Course description
+  - `credits` (integer, default 5): Course credit points
+  - `language` (enum: English/Deutsch): Teaching language
+  - `exam_type` (enum: Written/Oral/Portfolio): Assessment type
+- Relationships:
+  - `morphMany` to `CourseSchedule` (polymorphic lessons)
+  - `morphToMany` to `User` via `user_selections` (student choices with priority)
+- Accessor: `formatted_schedules` - returns human-readable schedule string
+
+#### ResearchProject Model
+- Fields:
+  - `title` (string): Project title
+  - `description` (text, nullable): Project description
+  - `supervisor` (string): Faculty supervisor name
+  - `credits` (integer, default 5): Credit points
+  - `start_date` (date, nullable): Project start date
+  - `end_date` (date, nullable): Project end date
+  - `max_students` (integer, default 1): Maximum student capacity
+- **Status**: No student enrollment system implemented yet
+- **Policy**: ResearchProjectPolicy currently denies all access (needs implementation)
+
+#### Semester Model
+- Represents academic terms
+- Fields:
+  - `year` (integer): Academic year (e.g., 2024, 2025)
+  - `season` (enum: 'WS' or 'SS'): Winter or Summer semester
+  - Unique constraint on (year, season)
+  - No timestamps
+- Method: `getLabel()` - generates formatted label (e.g., "WS24/25" or "SS25")
+
+#### CourseSchedule Model
+- **Polymorphic**: Can belong to AWPF or FWPM
+- Fields:
+  - `schedulable_type` & `schedulable_id`: Polymorphic relationship
+  - `day_of_week` (enum: Monday-Sunday): Day of the week
+  - `start_time` (time): Lesson start time
+  - `duration_minutes` (integer): Lesson duration
+- Scopes:
+  - `scopeForDay()`: Filter by specific day
+  - `scopeOrderedByDay()`: Order by day of week, then time
+- Accessor: `formatted_schedule` - returns formatted string (e.g., "Termin: Mo 14:00 (90 min.)")
+
+### Trait: HasOrderedUserChoices
+
+This trait implements a polymorphic many-to-many relationship with priority ordering for student course selections.
+
+**Key Concepts:**
+- Students can select multiple courses (AWPF/FWPM) per semester
+- Each selection has an optional `parent_elective_choice_id` that creates a hierarchy
+- This hierarchy represents priority: 1st choice → 2nd choice → 3rd choice
+- Self-referential foreign key in `user_selections` pivot table enables this ordering
+
+**Methods:**
+- `orderedUserChoices()`: MorphToMany relationship to User with pivot fields (semester_id, parent_elective_choice_id, id)
+- `getChoicesForUserAndSemester(User $user, Semester $semester)`: Get a user's choices for specific semester
+- `getUsersForSemester(Semester $semester)`: Get all users who selected this course in a semester
+
+**Use Case:**
+Student selects "Advanced Web Development" as 1st choice, "Mobile App Dev" as 2nd choice, "AI Fundamentals" as 3rd choice. The system stores these with parent_elective_choice_id linking them in order.
+
+### Database Schema
+
+#### user_selections (Polymorphic Pivot Table)
+```
+id                          (primary key)
+user_id                     (foreign key to users)
+semester_id                 (foreign key to semesters)
+elective_type               (string: 'App\\Models\\Awpf' or 'App\\Models\\Fwpm')
+elective_choice_id          (bigInteger: points to awpfs.id or fwpms.id)
+parent_elective_choice_id   (self-referencing foreign key, nullable)
+created_at, updated_at
+
+Indexes:
+- (user_id, semester_id, elective_type)
+- (elective_type, elective_choice_id)
+```
+
+#### course_schedules (Polymorphic)
+```
+id                     (primary key)
+schedulable_type       (string: 'App\\Models\\Awpf' or 'App\\Models\\Fwpm')
+schedulable_id         (bigInteger)
+day_of_week            (enum: Monday-Sunday)
+start_time             (time)
+duration_minutes       (integer)
+created_at, updated_at
+
+Index: (schedulable_type, schedulable_id, day_of_week)
+```
+
+### Enums
+
+#### Season (German University Terms)
+- `Winter` = 'WS' (Wintersemester - October to March)
+- `Summer` = 'SS' (Sommersemester - April to September)
+
+#### Language
+- `English`
+- `German` = 'Deutsch'
+
+#### ExamType
+- `Written` (Written Exam)
+- `Oral` (Oral Exam)
+- `Portfolio` (Portfolio Assessment)
+
+#### DayOfWeek
+- Monday through Sunday with German abbreviations (Mo, Di, Mi, Do, Fr, Sa, So)
+
+### Student Workflow (Intended Design)
+
+1. **Select Semester**: Choose current academic term (e.g., WS25/26)
+2. **Browse AWPF Courses**: View general electives with details (name, credits, language, exam type, schedule)
+3. **Select AWPF with Priority**: Choose multiple courses and rank them (1st choice, 2nd choice, etc.)
+4. **Browse FWPM Courses**: View subject-specific electives
+5. **Select FWPM with Priority**: Choose and rank FWPM courses
+6. **Browse Research Projects**: View available projects (supervisor, dates, capacity)
+7. **Register for Research Project**: Select project (when implemented)
+8. **Submit Selections**: Finalize course choices for semester
+
+### Professor/Admin Workflow
+
+1. **Create Courses (AWPF/FWPM)**:
+   - Enter name, description, credits
+   - Select language (English/Deutsch)
+   - Set exam type (Written/Oral/Portfolio)
+   - Add multiple course schedules (day, time, duration)
+
+2. **Create Research Projects**:
+   - Enter title, description, supervisor
+   - Set credits, start/end dates, max students capacity
+
+3. **Manage Semesters**:
+   - Create academic terms (year + season)
+   - Link courses to specific semesters
+
+4. **View Student Selections**:
+   - See which students selected which courses
+   - View selection priorities via parent_elective_choice_id relationships
+
+### Authorization & Policies
+
+#### AwpfPolicy & FwpmPolicy
+- Delegate to Spatie permission system
+- Permission format: `ViewAny:Awpf`, `View:Awpf`, `Create:Awpf`, `Update:Awpf`, `Delete:Awpf`
+- Similar pattern for FWPM: `ViewAny:Fwpm`, etc.
+
+#### RolePolicy
+- Manages role-based permissions
+- Same pattern as above policies
+
+#### ResearchProjectPolicy
+- **IMPORTANT**: Currently denies all access (all methods return false)
+- Needs implementation for student viewing and enrollment
+- Will need different permissions for students (view/register) vs professors (full CRUD)
+
+### Known Gaps & Future Implementation
+
+1. **Electives Panel Resources**: Student-facing Filament resources not yet implemented
+2. **Research Project Enrollment**: No student registration system exists
+3. **Course Allocation Algorithm**: Matching students to courses based on priorities
+4. **Student Dashboard**: Overview of selected courses and project status
+5. **Capacity Management**: Course and project capacity limits enforcement
+6. **Schedule Conflict Detection**: Prevent students from selecting courses with overlapping schedules
+
+### Development Context
+
+- **Authentication**: Not required for development (uses seeded users)
+- **Database**: MySQL with polymorphic relationships
+- **Frontend**: Vue 3 + Inertia for potential student interface pages
+- **Backend**: Filament v4 for admin interfaces, Laravel 12 for business logic
+- **German Context**: Terminology and semester structure follow German university system
