@@ -6,6 +6,7 @@ use App\Enums\Season;
 use App\Models\Semester;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class SemesterService
 {
@@ -21,17 +22,13 @@ class SemesterService
         $month = $now->month;
         $year = $now->year;
 
-        // Determine which semester we're in based on the month
         if ($month >= 10) {
-            // October-December: Winter semester of current year
             $season = Season::Winter;
             $semesterYear = $year;
         } elseif ($month <= 3) {
-            // January-March: Winter semester of previous year
             $season = Season::Winter;
             $semesterYear = $year - 1;
         } else {
-            // April-September: Summer semester of current year
             $season = Season::Summer;
             $semesterYear = $year;
         }
@@ -64,41 +61,17 @@ class SemesterService
     }
 
     /**
-     * Calculate the number of semesters between two semesters (inclusive).
+     * Calculate the number of semesters between two semesters.
      *
-     * Example: WS23/24 to SS24 = 1 semester apart (2 total semesters)
+     * Returns the number of semester steps from start to end.
+     * Example: WS23 to WS25 = 4 steps (WS23 → SS24 → WS24 → SS25 → WS25)
      */
     public function getSemestersBetween(Semester $start, Semester $end): int
     {
-        $count = 0;
+        $startIndex = $start->year * 2 + ($start->season === Season::Winter ? 1 : 0);
+        $endIndex = $end->year * 2 + ($end->season === Season::Winter ? 1 : 0);
 
-        // Calculate year difference
-        $yearDiff = $end->year - $start->year;
-
-        if ($yearDiff === 0) {
-            // Same year
-            if ($start->season === Season::Winter && $end->season === Season::Summer) {
-                $count = 1;
-            } elseif ($start->season === Season::Summer && $end->season === Season::Winter) {
-                $count = -1;
-            }
-            // Same season, same year = 0
-        } else {
-            // Different years
-            // Each year has 2 semesters (Winter and Summer)
-            $count = $yearDiff * 2;
-
-            // Adjust based on seasons
-            if ($start->season === Season::Summer) {
-                $count -= 1;
-            }
-
-            if ($end->season === Season::Winter) {
-                $count -= 1;
-            }
-        }
-
-        return $count;
+        return $endIndex - $startIndex;
     }
 
     /**
@@ -106,17 +79,14 @@ class SemesterService
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, Semester>
      */
-    public function getAllSemestersOrdered()
+    public function getAllSemestersOrdered(): Collection
     {
         return Semester::query()
             ->orderBy('year', 'asc')
-            ->orderByRaw("CASE WHEN season = 'WS' THEN 1 ELSE 2 END")
+            ->orderByRaw("CASE WHEN season = 'SS' THEN 1 ELSE 2 END")
             ->get();
     }
 
-    /**
-     * Check if a semester is in the past relative to current semester.
-     */
     public function isPastSemester(Semester $semester): bool
     {
         $current = $this->getCurrentSemester();
@@ -128,9 +98,6 @@ class SemesterService
         return $this->getSemestersBetween($semester, $current) > 0;
     }
 
-    /**
-     * Check if a semester is in the future relative to current semester.
-     */
     public function isFutureSemester(Semester $semester): bool
     {
         $current = $this->getCurrentSemester();
@@ -142,9 +109,6 @@ class SemesterService
         return $this->getSemestersBetween($current, $semester) > 0;
     }
 
-    /**
-     * Check if a semester is the current active semester.
-     */
     public function isCurrentSemester(Semester $semester): bool
     {
         $current = $this->getCurrentSemester();
