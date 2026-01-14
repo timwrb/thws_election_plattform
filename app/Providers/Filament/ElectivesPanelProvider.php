@@ -25,10 +25,12 @@ class ElectivesPanelProvider extends PanelProvider
         return $panel
             ->id('electives')
             ->path('electives')
+            ->viteTheme('resources/css/filament/electives/theme.css')
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->topNavigation()
+            ->login()
             ->spa(hasPrefetching: true)
             ->darkModeBrandLogo(asset('images/thws_logo_mini.png'))
             ->brandLogo(asset('images/thws-logo.png'))
