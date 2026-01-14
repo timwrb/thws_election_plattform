@@ -88,7 +88,7 @@ class MySelectionsWidget extends BaseWidget
     /**
      * @return Builder<UserSelection>|null
      */
-    protected function getTableQuery(): Builder|null
+    protected function getTableQuery(): ?Builder
     {
         $semester = $this->getCurrentSemester();
 

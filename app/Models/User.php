@@ -7,6 +7,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -135,6 +136,29 @@ class User extends Authenticatable implements FilamentUser
     public function createdResearchProjects(): HasMany
     {
         return $this->hasMany(ResearchProject::class, 'creator_id');
+    }
+
+    /**
+     * @return HasMany<UserSemester, $this>
+     */
+    public function userSemesters(): HasMany
+    {
+        return $this->hasMany(UserSemester::class);
+    }
+
+    /**
+     * @return HasOne<UserSemester, $this>
+     */
+    public function currentUserSemester(): HasOne
+    {
+        return $this->hasOne(UserSemester::class)
+            ->where('is_current', true)
+            ->with('semester');
+    }
+
+    public function getCurrentSemesterInfo(): ?UserSemester
+    {
+        return $this->currentUserSemester()->first();
     }
 
     public function canEnrollInResearchProject(ResearchProject $project, Semester $semester): bool

@@ -5,10 +5,11 @@ namespace App\Filament\Electives\Resources\ResearchProjects\Pages;
 use App\Filament\Electives\Resources\ResearchProjects\ResearchProjectResource;
 use App\Models\ResearchProject;
 use App\Models\Semester;
+use App\Models\UserSemester;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -41,19 +42,50 @@ class CreateResearchProject extends Page implements HasForms
     /** @var array<string, mixed>|null */
     public ?array $data = [];
 
+    protected ?UserSemester $currentUserSemester = null;
+
     public function mount(): void
     {
+        $this->currentUserSemester = auth()->user()->getCurrentSemesterInfo();
+
+        if (! $this->currentUserSemester instanceof UserSemester) {
+            Notification::make()
+                ->warning()
+                ->title('No active semester')
+                ->body('You must have an active semester set to create a research project. Please contact administration.')
+                ->persistent()
+                ->send();
+
+            $this->redirect(ResearchProjectResource::getUrl('index'));
+
+            return;
+        }
+
+        // Pre-fill with defaults
         $this->form->fill([
-            'credits' => 5,
             'max_students' => 1,
         ]);
     }
 
     public function form(Schema $schema): Schema
     {
+        $semesterLabel = $this->currentUserSemester?->semester->getLabel() ?? 'N/A';
+        $credits = $this->getDefaultCreditsForSemester();
+
         return $schema
             ->components([
                 Form::make([
+                    Section::make('Semester Information')
+                        ->description('Your project will be automatically assigned to your current semester.')
+                        ->schema([
+                            Placeholder::make('current_semester')
+                                ->label('Semester')
+                                ->content($semesterLabel),
+                            Placeholder::make('credits')
+                                ->label('Credits (ECTS)')
+                                ->content((string) $credits),
+                        ])
+                        ->columns(2),
                     Section::make('Project Information')
                         ->description('Provide details about your research project.')
                         ->schema([
@@ -71,18 +103,6 @@ class CreateResearchProject extends Page implements HasForms
                                 ->required()
                                 ->maxLength(255)
                                 ->helperText('Professor or lecturer supervising this project'),
-                            Select::make('semester_id')
-                                ->label('Semester')
-                                ->options($this->getSemesterOptions())
-                                ->required()
-                                ->helperText('The semester when this project will be conducted'),
-                            TextInput::make('credits')
-                                ->label('Credits (ECTS)')
-                                ->required()
-                                ->numeric()
-                                ->default(5)
-                                ->minValue(1)
-                                ->maxValue(30),
                             TextInput::make('max_students')
                                 ->label('Maximum Students')
                                 ->required()
@@ -122,11 +142,22 @@ class CreateResearchProject extends Page implements HasForms
         $data = $this->data;
 
         // Validate required fields
-        if (empty($data['title']) || empty($data['supervisor']) || empty($data['semester_id'])) {
+        if (empty($data['title']) || empty($data['supervisor'])) {
             Notification::make()
                 ->warning()
                 ->title('Missing required fields')
                 ->body('Please fill in all required fields.')
+                ->send();
+
+            return;
+        }
+
+        // Ensure user has active semester
+        if (! $this->currentUserSemester instanceof UserSemester) {
+            Notification::make()
+                ->danger()
+                ->title('No active semester')
+                ->body('You must have an active semester to create a research project.')
                 ->send();
 
             return;
@@ -139,8 +170,8 @@ class CreateResearchProject extends Page implements HasForms
                 'description' => $data['description'] ?? null,
                 'supervisor' => $data['supervisor'],
                 'creator_id' => auth()->id(),
-                'semester_id' => $data['semester_id'],
-                'credits' => $data['credits'] ?? 5,
+                'semester_id' => $this->currentUserSemester->semester_id,
+                'credits' => $this->getDefaultCreditsForSemester(),
                 'start_date' => $data['start_date'] ?? null,
                 'end_date' => $data['end_date'] ?? null,
                 'max_students' => $data['max_students'] ?? 1,
@@ -162,19 +193,11 @@ class CreateResearchProject extends Page implements HasForms
         }
     }
 
-    /**
-     * @return array<int, string>
-     */
-    protected function getSemesterOptions(): array
+    protected function getDefaultCreditsForSemester(): int
     {
-        return Semester::query()
-            ->orderBy('year', 'desc')
-            ->orderBy('season', 'desc')
-            ->get()
-            ->mapWithKeys(fn (Semester $semester): array => [
-                $semester->id => $semester->getLabel(),
-            ])
-            ->toArray();
+        // Default credits for research projects is typically 5 ECTS
+        // This could be customized based on semester_number if needed
+        return 5;
     }
 
     #[\Override]
