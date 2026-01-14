@@ -3,7 +3,6 @@
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
-use Illuminate\Contracts\Support\Htmlable;
 
 enum ExamType: string implements HasLabel
 {
@@ -11,7 +10,7 @@ enum ExamType: string implements HasLabel
     case Oral = 'oral';
     case Portfolio = 'portfolio';
 
-    public function getLabel(): string|Htmlable|null
+    public function getLabel(): string
     {
         return match ($this) {
             self::Written => 'Written Exam',

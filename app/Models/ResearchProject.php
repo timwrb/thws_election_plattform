@@ -113,8 +113,8 @@ class ResearchProject extends Model
      */
     public function scopeWithAvailableCapacity(Builder $query, Semester $semester): Builder
     {
-        return $query->whereHas('enrollments', function ($q) use ($semester): void {
-            $q->forSemester($semester)
+        return $query->whereHas('enrollments', function (Builder $q) use ($semester): void {
+            $q->where('semester_id', $semester->id)
                 ->whereIn('status', ['pending', 'confirmed']);
         }, '<', DB::raw('max_students'));
     }

@@ -23,6 +23,9 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property \Filament\Schemas\Schema $form
+ */
 class EnrollInCourses extends Page implements HasForms
 {
     use InteractsWithForms;
@@ -37,6 +40,7 @@ class EnrollInCourses extends Page implements HasForms
 
     protected static ?int $navigationSort = 12;
 
+    /** @var array<string, mixed>|null */
     public ?array $data = [];
 
     public function mount(): void
@@ -154,6 +158,9 @@ class EnrollInCourses extends Page implements HasForms
         }
     }
 
+    /**
+     * @return array<int, string>
+     */
     protected function getAvailableCourses(): array
     {
         return Awpf::query()
@@ -161,6 +168,9 @@ class EnrollInCourses extends Page implements HasForms
             ->toArray();
     }
 
+    /**
+     * @return array<string, int>
+     */
     protected function getExistingSelections(): array
     {
         $semester = $this->getCurrentSemester();

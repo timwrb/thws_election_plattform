@@ -12,7 +12,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class MySelectionsWidget extends BaseWidget
 {
@@ -86,7 +85,10 @@ class MySelectionsWidget extends BaseWidget
             ->description('View all your current course and project selections');
     }
 
-    protected function getTableQuery(): Builder|Relation|null
+    /**
+     * @return Builder<UserSelection>|null
+     */
+    protected function getTableQuery(): Builder|null
     {
         $semester = $this->getCurrentSemester();
 

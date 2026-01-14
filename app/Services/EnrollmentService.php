@@ -59,6 +59,8 @@ class EnrollmentService
 
     /**
      * Register ordered choices for AWPF or FWPM
+     *
+     * @param  array<int>  $orderedElectiveIds
      */
     public function registerPriorityChoices(
         User $user,
@@ -119,6 +121,7 @@ class EnrollmentService
 
         // Check capacity for research projects
         if ($selection->elective_type === ResearchProject::class) {
+            /** @var ResearchProject $project */
             $project = $selection->elective;
             if (! $project->hasCapacity($selection->semester)) {
                 throw ValidationException::withMessages([

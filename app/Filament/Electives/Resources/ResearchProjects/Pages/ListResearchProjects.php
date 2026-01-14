@@ -3,6 +3,8 @@
 namespace App\Filament\Electives\Resources\ResearchProjects\Pages;
 
 use App\Filament\Electives\Resources\ResearchProjects\ResearchProjectResource;
+use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListResearchProjects extends ListRecords
@@ -13,6 +15,9 @@ class ListResearchProjects extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            CreateAction::make('create')
+            ->icon('heroicon-s-document-plus')
+        ];
     }
 }

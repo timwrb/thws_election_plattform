@@ -3,7 +3,6 @@
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
-use Illuminate\Contracts\Support\Htmlable;
 
 enum DayOfWeek: string implements HasLabel
 {
@@ -15,7 +14,7 @@ enum DayOfWeek: string implements HasLabel
     case Saturday = 'saturday';
     case Sunday = 'sunday';
 
-    public function getLabel(): string|Htmlable|null
+    public function getLabel(): string
     {
         return match ($this) {
             self::Monday => __('Monday'),

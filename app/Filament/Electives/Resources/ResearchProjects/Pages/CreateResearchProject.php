@@ -21,6 +21,9 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
+/**
+ * @property \Filament\Schemas\Schema $form
+ */
 class CreateResearchProject extends Page implements HasForms
 {
     use InteractsWithForms;
@@ -35,6 +38,7 @@ class CreateResearchProject extends Page implements HasForms
 
     protected static ?int $navigationSort = 31;
 
+    /** @var array<string, mixed>|null */
     public ?array $data = [];
 
     public function mount(): void
@@ -158,6 +162,9 @@ class CreateResearchProject extends Page implements HasForms
         }
     }
 
+    /**
+     * @return array<int, string>
+     */
     protected function getSemesterOptions(): array
     {
         return Semester::query()
