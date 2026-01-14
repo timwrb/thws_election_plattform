@@ -26,6 +26,7 @@ class SemesterInfoWidget extends Widget
             ->first();
     }
 
+    #[\Override]
     public function render(): View
     {
         return view('filament.electives.widgets.semester-info-widget');

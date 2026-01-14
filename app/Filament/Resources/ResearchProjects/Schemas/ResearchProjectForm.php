@@ -69,13 +69,13 @@ class ResearchProjectForm
                                     ->label('Start Date')
                                     ->native(false)
                                     ->displayFormat('d.m.Y')
-                                    ->maxDate(fn (Get $get) => $get('end_date')),
+                                    ->maxDate(fn (Get $get): mixed => $get('end_date')),
 
                                 DatePicker::make('end_date')
                                     ->label('End Date')
                                     ->native(false)
                                     ->displayFormat('d.m.Y')
-                                    ->minDate(fn (Get $get) => $get('start_date'))
+                                    ->minDate(fn (Get $get): mixed => $get('start_date'))
                                     ->after('start_date'),
                             ]),
                     ]),

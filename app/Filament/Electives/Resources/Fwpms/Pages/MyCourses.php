@@ -20,6 +20,9 @@ class MyCourses extends ListRecords
 
     protected static ?int $navigationSort = 21;
 
+    /**
+     * @return Builder<Fwpm>
+     */
     #[\Override]
     protected function getTableQuery(): Builder
     {

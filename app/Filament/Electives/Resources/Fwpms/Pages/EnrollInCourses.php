@@ -21,6 +21,9 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property \Filament\Schemas\Schema $form
+ */
 class EnrollInCourses extends Page implements HasForms
 {
     use InteractsWithForms;
@@ -35,6 +38,7 @@ class EnrollInCourses extends Page implements HasForms
 
     protected static ?int $navigationSort = 22;
 
+    /** @var array<string, mixed>|null */
     public ?array $data = [];
 
     public function mount(): void
@@ -142,6 +146,9 @@ class EnrollInCourses extends Page implements HasForms
         }
     }
 
+    /**
+     * @return array<int, string>
+     */
     protected function getAvailableCourses(): array
     {
         return Fwpm::query()
@@ -149,6 +156,9 @@ class EnrollInCourses extends Page implements HasForms
             ->toArray();
     }
 
+    /**
+     * @return array<string, int>
+     */
     protected function getExistingSelections(): array
     {
         $semester = $this->getCurrentSemester();

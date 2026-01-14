@@ -2,6 +2,7 @@
 
 namespace App\Filament\Electives\Resources\ResearchProjects;
 
+use App\Filament\Electives\Resources\ResearchProjects\Pages\CreateResearchProject;
 use App\Filament\Electives\Resources\ResearchProjects\Pages\ListResearchProjects;
 use App\Filament\Electives\Resources\ResearchProjects\Schemas\ResearchProjectForm;
 use App\Filament\Electives\Resources\ResearchProjects\Tables\ResearchProjectsTable;
@@ -48,6 +49,7 @@ class ResearchProjectResource extends Resource
     {
         return [
             'index' => ListResearchProjects::route('/'),
+            'create' => CreateResearchProject::route('/create'),
         ];
     }
 }
