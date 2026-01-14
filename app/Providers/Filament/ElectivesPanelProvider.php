@@ -16,6 +16,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Config;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class ElectivesPanelProvider extends PanelProvider
@@ -26,7 +27,7 @@ class ElectivesPanelProvider extends PanelProvider
             ->id('electives')
             ->path('electives')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::convertToOklch(Config::string('colors.primary')),
             ])
             ->topNavigation()
             ->spa(hasPrefetching: true)
