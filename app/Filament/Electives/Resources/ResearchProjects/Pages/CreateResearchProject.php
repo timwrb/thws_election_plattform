@@ -5,7 +5,7 @@ namespace App\Filament\Electives\Resources\ResearchProjects\Pages;
 use App\Filament\Electives\Resources\ResearchProjects\ResearchProjectResource;
 use App\Models\ResearchProject;
 use App\Models\Semester;
-use App\Models\UserSemester;
+use App\Services\SemesterService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -42,17 +42,17 @@ class CreateResearchProject extends Page implements HasForms
     /** @var array<string, mixed>|null */
     public ?array $data = [];
 
-    protected ?UserSemester $currentUserSemester = null;
+    protected ?Semester $currentSemester = null;
 
     public function mount(): void
     {
-        $this->currentUserSemester = auth()->user()->getCurrentSemesterInfo();
+        $this->currentSemester = app(SemesterService::class)->getCurrentSemester();
 
-        if (! $this->currentUserSemester instanceof UserSemester) {
+        if (! $this->currentSemester instanceof Semester) {
             Notification::make()
                 ->warning()
                 ->title('No active semester')
-                ->body('You must have an active semester set to create a research project. Please contact administration.')
+                ->body('There is no active semester configured. Please contact administration.')
                 ->persistent()
                 ->send();
 
@@ -69,7 +69,7 @@ class CreateResearchProject extends Page implements HasForms
 
     public function form(Schema $schema): Schema
     {
-        $semesterLabel = $this->currentUserSemester?->semester->getLabel() ?? 'N/A';
+        $semesterLabel = $this->currentSemester?->getLabel() ?? 'N/A';
         $credits = $this->getDefaultCreditsForSemester();
 
         return $schema
@@ -153,11 +153,11 @@ class CreateResearchProject extends Page implements HasForms
         }
 
         // Ensure user has active semester
-        if (! $this->currentUserSemester instanceof UserSemester) {
+        if (! $this->currentSemester instanceof Semester) {
             Notification::make()
                 ->danger()
                 ->title('No active semester')
-                ->body('You must have an active semester to create a research project.')
+                ->body('There is no active semester configured.')
                 ->send();
 
             return;
@@ -170,7 +170,7 @@ class CreateResearchProject extends Page implements HasForms
                 'description' => $data['description'] ?? null,
                 'supervisor' => $data['supervisor'],
                 'creator_id' => auth()->id(),
-                'semester_id' => $this->currentUserSemester->semester_id,
+                'semester_id' => $this->currentSemester->id,
                 'credits' => $this->getDefaultCreditsForSemester(),
                 'start_date' => $data['start_date'] ?? null,
                 'end_date' => $data['end_date'] ?? null,

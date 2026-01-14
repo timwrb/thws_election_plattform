@@ -8,6 +8,7 @@ use App\Models\Fwpm;
 use App\Models\ResearchProject;
 use App\Models\Semester;
 use App\Models\UserSelection;
+use App\Services\SemesterService;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -108,15 +109,6 @@ class MySelectionsWidget extends BaseWidget
 
     protected function getCurrentSemester(): ?Semester
     {
-        $configuredSemesterId = config('electives.current_semester_id');
-
-        if ($configuredSemesterId) {
-            return Semester::query()->find($configuredSemesterId);
-        }
-
-        return Semester::query()
-            ->orderBy('year', 'desc')
-            ->orderBy('season', 'desc')
-            ->first();
+        return app(SemesterService::class)->getCurrentSemester();
     }
 }

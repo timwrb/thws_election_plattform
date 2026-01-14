@@ -8,6 +8,7 @@ use App\Models\Fwpm;
 use App\Models\Semester;
 use App\Models\UserSelection;
 use App\Services\EnrollmentService;
+use App\Services\SemesterService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -189,17 +190,7 @@ class EnrollInCourses extends Page implements HasForms
 
     protected function getCurrentSemester(): ?Semester
     {
-        $configuredSemesterId = config('electives.current_semester_id');
-
-        if ($configuredSemesterId) {
-            return Semester::query()->find($configuredSemesterId);
-        }
-
-        // Fallback: get the most recent semester
-        return Semester::query()
-            ->orderBy('year', 'desc')
-            ->orderBy('season', 'desc')
-            ->first();
+        return app(SemesterService::class)->getCurrentSemester();
     }
 
     protected function getOrdinalLabel(int $number): string
