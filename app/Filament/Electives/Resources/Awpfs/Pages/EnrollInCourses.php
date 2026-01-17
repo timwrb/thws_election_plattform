@@ -6,6 +6,7 @@ use App\Enums\EnrollmentStatus;
 use App\Filament\Electives\Resources\Awpfs\AwpfResource;
 use App\Models\Awpf;
 use App\Models\Semester;
+use App\Models\User;
 use App\Models\UserSelection;
 use App\Services\EnrollmentService;
 use App\Services\SemesterService;
@@ -21,11 +22,14 @@ use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\DB;
+use Override;
+use UnitEnum;
 
 /**
- * @property \Filament\Schemas\Schema $form
+ * @property Schema $form
  */
 class EnrollInCourses extends Page implements HasForms
 {
@@ -34,6 +38,8 @@ class EnrollInCourses extends Page implements HasForms
     protected static string $resource = AwpfResource::class;
 
     protected static ?string $title = 'Enroll in AWPF Courses';
+
+    protected static string|UnitEnum|null $navigationGroup = 'AWPF';
 
     protected static ?string $navigationLabel = 'Enroll Now';
 
@@ -44,21 +50,19 @@ class EnrollInCourses extends Page implements HasForms
     /** @var array<string, mixed>|null */
     public ?array $data = [];
 
-    public function mount(): void
-    {
-        $this->form->fill($this->getExistingSelections());
-    }
-
-    #[\Override]
-    public function getView(): string
-    {
-        return 'filament.electives.resources.awpfs.pages.enroll-in-courses';
+    public function mount(
+        SemesterService $semesterService,
+        #[CurrentUser] User $user
+    ): void {
+        $this->form->fill($this->getExistingSelections($semesterService, $user));
     }
 
     public function form(Schema $schema): Schema
     {
         $maxSelections = config('electives.max_selections.awpf', 2);
-        $availableCourses = $this->getAvailableCourses();
+        $availableCourses = Awpf::query()
+            ->pluck('name', 'id')
+            ->toArray();
 
         $fields = [];
 
@@ -98,11 +102,10 @@ class EnrollInCourses extends Page implements HasForms
             ->statePath('data');
     }
 
-    public function save(): void
+    public function save(SemesterService $semesterService, EnrollmentService $enrollmentService, #[CurrentUser] User $user): void
     {
         $data = $this->form->getState();
 
-        // Extract only filled choices and preserve their order
         $orderedElectiveIds = collect($data)
             ->filter(fn ($value): bool => ! empty($value))
             ->values()
@@ -117,9 +120,7 @@ class EnrollInCourses extends Page implements HasForms
 
             return;
         }
-
-        // Get current semester
-        $semester = $this->getCurrentSemester();
+        $semester = $semesterService->getCurrentSemester();
 
         if (! $semester instanceof Semester) {
             Notification::make()
@@ -132,11 +133,9 @@ class EnrollInCourses extends Page implements HasForms
         }
 
         try {
-            DB::transaction(function () use ($orderedElectiveIds, $semester): void {
-                // Use EnrollmentService to register priority choices
-                $service = app(EnrollmentService::class);
-                $service->registerPriorityChoices(
-                    auth()->user(),
+            DB::transaction(function () use ($enrollmentService, $user, $orderedElectiveIds, $semester): void {
+                $enrollmentService->registerPriorityChoices(
+                    $user,
                     $semester,
                     Awpf::class,
                     $orderedElectiveIds
@@ -149,7 +148,7 @@ class EnrollInCourses extends Page implements HasForms
                 ->body('Your course selections have been submitted successfully. They are pending approval.')
                 ->send();
 
-            $this->redirect(AwpfResource::getUrl('my-courses'));
+            $this->redirect(AwpfResource::getUrl('active'));
         } catch (\Exception $e) {
             Notification::make()
                 ->danger()
@@ -160,29 +159,18 @@ class EnrollInCourses extends Page implements HasForms
     }
 
     /**
-     * @return array<int, string>
-     */
-    protected function getAvailableCourses(): array
-    {
-        return Awpf::query()
-            ->pluck('name', 'id')
-            ->toArray();
-    }
-
-    /**
      * @return array<string, string>
      */
-    protected function getExistingSelections(): array
+    protected function getExistingSelections(SemesterService $semesterService, #[CurrentUser] User $user): array
     {
-        $semester = $this->getCurrentSemester();
+        $semester = $semesterService->getCurrentSemester();
 
         if (! $semester instanceof Semester) {
             return [];
         }
 
-        // Get existing selections for this user and semester
         $selections = UserSelection::query()
-            ->forUser(auth()->user())
+            ->forUser($user)
             ->forSemester($semester)
             ->where('elective_type', Awpf::class)
             ->whereIn('status', [EnrollmentStatus::Pending, EnrollmentStatus::Confirmed])
@@ -193,16 +181,11 @@ class EnrollInCourses extends Page implements HasForms
         $index = 1;
 
         foreach ($selections as $selection) {
-            $data["choice_{$index}"] = $selection->elective_choice_id;
+            $data["choice_$index"] = $selection->elective_choice_id;
             $index++;
         }
 
         return $data;
-    }
-
-    protected function getCurrentSemester(): ?Semester
-    {
-        return app(SemesterService::class)->getCurrentSemester();
     }
 
     protected function getOrdinalLabel(int $number): string
@@ -215,9 +198,15 @@ class EnrollInCourses extends Page implements HasForms
         };
     }
 
-    #[\Override]
+    #[Override]
     public function getTitle(): string|Htmlable
     {
         return static::$title;
+    }
+
+    #[Override]
+    public function getView(): string
+    {
+        return 'filament.electives.resources.awpfs.pages.enroll-in-courses';
     }
 }

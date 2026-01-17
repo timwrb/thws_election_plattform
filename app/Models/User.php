@@ -63,6 +63,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         ];
     }
 
+    public function getFullNameAttribute(): string
+    {
+        return "$this->salutation $this->name $this->surname";
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if ($this->hasRole('super_admin')) {

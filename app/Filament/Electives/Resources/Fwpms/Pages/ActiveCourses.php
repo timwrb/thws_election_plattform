@@ -8,7 +8,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 
-class MyCourses extends ListRecords
+class ActiveCourses extends ListRecords
 {
     protected static string $resource = FwpmResource::class;
 

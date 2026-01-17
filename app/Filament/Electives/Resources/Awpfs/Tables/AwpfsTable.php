@@ -3,7 +3,6 @@
 namespace App\Filament\Electives\Resources\Awpfs\Tables;
 
 use App\Models\Awpf;
-use Filament\Actions\EditAction;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -19,7 +18,7 @@ class AwpfsTable
                         ->searchable(),
                     TextColumn::make('professor.name')
                         ->label('Professor')
-                        ->formatStateUsing(fn (Awpf $record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-'),
+                        ->formatStateUsing(fn (Awpf $record): string => $record->professor->fullName),
                     TextColumn::make('language')
                         ->badge()
                         ->searchable(),
@@ -36,7 +35,6 @@ class AwpfsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
             ])
             ->toolbarActions([
             ]);
