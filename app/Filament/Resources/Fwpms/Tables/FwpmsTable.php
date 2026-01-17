@@ -24,6 +24,12 @@ class FwpmsTable
                     ->sortable()
                     ->weight('medium'),
 
+                TextColumn::make('professor.name')
+                    ->label('Professor')
+                    ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
+                    ->searchable(['professor.name', 'professor.surname'])
+                    ->sortable(),
+
                 TextColumn::make('credits')
                     ->label('ECTS')
                     ->numeric()

@@ -27,8 +27,13 @@ class FwpmInfolist
                             ->placeholder('No description provided')
                             ->columnSpanFull(),
 
-                        Grid::make(3)
+                        Grid::make(4)
                             ->schema([
+                                TextEntry::make('professor.name')
+                                    ->label('Professor')
+                                    ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
+                                    ->icon('heroicon-o-user'),
+
                                 TextEntry::make('credits')
                                     ->label('Credits (ECTS)')
                                     ->numeric()

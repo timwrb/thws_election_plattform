@@ -7,7 +7,6 @@ use App\Enums\Language;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -24,44 +23,36 @@ class AwpfsTable
                     ->sortable()
                     ->weight('medium'),
 
+                TextColumn::make('professor.name')
+                    ->label('Professor')
+                    ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
+                    ->searchable(['professor.name', 'professor.surname']),
+
                 TextColumn::make('credits')
                     ->label('ECTS')
                     ->numeric()
                     ->sortable()
-                    ->suffix(' cr.')
-                    ->alignCenter(),
+                    ->suffix(' cr.'),
 
                 TextColumn::make('language')
                     ->label('Language')
                     ->badge()
                     ->searchable()
-                    ->sortable()
-                    ->alignCenter(),
+                    ->sortable(),
 
                 TextColumn::make('exam_type')
                     ->label('Exam Type')
                     ->badge()
                     ->searchable()
-                    ->sortable()
-                    ->alignCenter(),
+                    ->sortable(),
 
                 TextColumn::make('formatted_schedules')
                     ->label('Schedule')
                     ->placeholder('No schedule defined')
-                    ->wrap()
+                    ->separator(', ')
+                    ->listWithLineBreaks()
+                    ->limitList()
                     ->toggleable(),
-
-                TextColumn::make('created_at')
-                    ->label('Created')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('updated_at')
-                    ->label('Updated')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('language')
@@ -82,7 +73,6 @@ class AwpfsTable
                     ->label('Credits'),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

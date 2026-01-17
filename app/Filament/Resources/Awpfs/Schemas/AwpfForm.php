@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Awpfs\Schemas;
 use App\Enums\DayOfWeek;
 use App\Enums\ExamType;
 use App\Enums\Language;
+use App\Models\User;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -35,8 +36,15 @@ class AwpfForm
                             ->rows(4)
                             ->columnSpanFull(),
 
-                        Grid::make(3)
+                        Grid::make(4)
                             ->schema([
+                                Select::make('professor_id')
+                                    ->label('Professor')
+                                    ->relationship('professor')
+                                    ->getOptionLabelFromRecordUsing(fn (User $user): string => "{$user->name} {$user->surname}")
+                                    ->searchable(['name', 'surname', 'email'])
+                                    ->preload(),
+
                                 TextInput::make('credits')
                                     ->label('Credits (ECTS)')
                                     ->required()
@@ -94,8 +102,8 @@ class AwpfForm
                             ->addActionLabel('Add Schedule')
                             ->reorderable()
                             ->collapsible()
-                            ->itemLabel(fn (array $state): ?string => isset($state['day_of_week'], $state['start_time'])
-                                ? DayOfWeek::from($state['day_of_week'])->getLabel().' at '.$state['start_time']
+                            ->itemLabel(fn (array $state): ?string => isset($state['day_of_week'], $state['start_time']) && $state['day_of_week'] instanceof DayOfWeek
+                                ? ($state['day_of_week'])->getLabel().' at '.$state['start_time']
                                 : null),
                     ]),
             ]);

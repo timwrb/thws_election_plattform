@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\ResearchProjects\Schemas;
 
+use App\Models\User;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -34,10 +36,12 @@ class ResearchProjectForm
 
                         Grid::make(3)
                             ->schema([
-                                TextInput::make('supervisor')
-                                    ->label('Supervisor Name')
-                                    ->required()
-                                    ->maxLength(255),
+                                Select::make('professor_id')
+                                    ->label('Professor')
+                                    ->relationship('professor')
+                                    ->getOptionLabelFromRecordUsing(fn (User $user): string => "{$user->name} {$user->surname}")
+                                    ->searchable(['name', 'surname', 'email'])
+                                    ->preload(),
 
                                 TextInput::make('credits')
                                     ->label('Credits (ECTS)')

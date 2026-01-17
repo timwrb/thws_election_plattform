@@ -29,8 +29,9 @@ class ResearchProjectInfolist
 
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('supervisor')
-                                    ->label('Supervisor')
+                                TextEntry::make('professor.name')
+                                    ->label('Professor')
+                                    ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
                                     ->icon('heroicon-o-user'),
 
                                 TextEntry::make('credits')
