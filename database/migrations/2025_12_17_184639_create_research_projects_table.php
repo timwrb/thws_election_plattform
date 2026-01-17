@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ElectiveStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -31,6 +32,7 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
             $table->integer('max_students')->default(1);
+            $table->string('status')->default(ElectiveStatus::Draft->value);
             $table->timestamps();
 
             $table->index(['semester_id', 'creator_id']);

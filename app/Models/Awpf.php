@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ElectiveStatus;
 use App\Enums\ExamType;
 use App\Enums\Language;
 use App\Traits\HasOrderedUserChoices;
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property int $credits
  * @property Language $language
  * @property ExamType $exam_type
+ * @property ElectiveStatus $status
  * @property int|null $professor_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -37,6 +39,7 @@ class Awpf extends Model
             'credits' => 'integer',
             'language' => Language::class,
             'exam_type' => ExamType::class,
+            'status' => ElectiveStatus::class,
         ];
     }
 

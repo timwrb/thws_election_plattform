@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ElectiveStatus;
 use App\Traits\HasOrderedUserChoices;
 use App\Traits\HasSemester;
 use Database\Factories\ResearchProjectFactory;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon|null $start_date
  * @property Carbon|null $end_date
  * @property int $max_students
+ * @property ElectiveStatus $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
@@ -45,6 +47,7 @@ class ResearchProject extends Model
         'start_date',
         'end_date',
         'max_students',
+        'status',
     ];
 
     protected function casts(): array
@@ -54,6 +57,7 @@ class ResearchProject extends Model
             'max_students' => 'integer',
             'start_date' => 'date',
             'end_date' => 'date',
+            'status' => ElectiveStatus::class,
         ];
     }
 
