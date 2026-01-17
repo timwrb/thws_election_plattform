@@ -12,9 +12,6 @@ class SemesterService
 {
     /**
      * Get the current active semester based on today's date.
-     *
-     * Winter Semester (WS): October 1 - March 31
-     * Summer Semester (SS): April 1 - September 30
      */
     public function getCurrentSemester(): ?Semester
     {
@@ -41,9 +38,6 @@ class SemesterService
 
     /**
      * Calculate which semester number a user is in based on their start semester.
-     *
-     * Example: If user started in WS23/24 and current semester is WS25/26,
-     * they are in their 5th semester.
      */
     public function calculateSemesterNumber(User $user): ?int
     {
@@ -64,7 +58,6 @@ class SemesterService
      * Calculate the number of semesters between two semesters.
      *
      * Returns the number of semester steps from start to end.
-     * Example: WS23 to WS25 = 4 steps (WS23 → SS24 → WS24 → SS25 → WS25)
      */
     public function getSemestersBetween(Semester $start, Semester $end): int
     {
@@ -82,7 +75,7 @@ class SemesterService
     public function getAllSemestersOrdered(): Collection
     {
         return Semester::query()
-            ->orderBy('year', 'asc')
+            ->orderBy('year')
             ->orderByRaw("CASE WHEN season = 'SS' THEN 1 ELSE 2 END")
             ->get();
     }
