@@ -23,11 +23,22 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'salutation' => null,
             'name' => fake()->firstName(),
             'surname' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= 'password',
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * Indicate that the user is a professor with a salutation.
+     */
+    public function professor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'salutation' => fake()->randomElement(['Prof.', 'Prof. Dr.', 'Dr.']),
+        ]);
     }
 }

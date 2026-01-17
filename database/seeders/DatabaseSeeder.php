@@ -13,6 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            SuperAdminSeeder::class,
+        ]);
+
         Role::firstOrCreate(['name' => 'student']);
 
         User::factory()->create([

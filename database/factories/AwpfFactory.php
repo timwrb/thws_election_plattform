@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\ExamType;
 use App\Enums\Language;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,5 +31,12 @@ class AwpfFactory extends Factory
     public function withSchedules(int $count = 2): static
     {
         return $this->hasSchedules($count);
+    }
+
+    public function withProfessor(?User $user = null): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'professor_id' => $user?->id ?? User::factory(),
+        ]);
     }
 }
