@@ -2,6 +2,7 @@
 
 namespace App\Filament\Electives\Resources\Awpfs\Tables;
 
+use App\Models\Awpf;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -18,25 +19,13 @@ class AwpfsTable
                         ->searchable(),
                     TextColumn::make('professor.name')
                         ->label('Professor')
-                        ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
-                        ->searchable(['professor.name', 'professor.surname']),
-                    TextColumn::make('credits')
-                        ->numeric()
-                        ->sortable(),
+                        ->formatStateUsing(fn (Awpf $record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-'),
                     TextColumn::make('language')
                         ->badge()
                         ->searchable(),
                     TextColumn::make('exam_type')
                         ->badge()
                         ->searchable(),
-                    TextColumn::make('created_at')
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
-                    TextColumn::make('updated_at')
-                        ->dateTime()
-                        ->sortable()
-                        ->toggleable(isToggledHiddenByDefault: true),
                 ]),
             ])
             ->contentGrid([
