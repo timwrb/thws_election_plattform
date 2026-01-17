@@ -4,6 +4,7 @@ namespace App\Filament\Electives\Resources\Fwpms\Schemas;
 
 use App\Enums\ExamType;
 use App\Enums\Language;
+use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,6 +20,12 @@ class FwpmForm
                     ->required(),
                 Textarea::make('content')
                     ->columnSpanFull(),
+                Select::make('professor_id')
+                    ->label('Professor')
+                    ->relationship('professor')
+                    ->getOptionLabelFromRecordUsing(fn (User $user): string => "{$user->name} {$user->surname}")
+                    ->searchable(['name', 'surname', 'email'])
+                    ->preload(),
                 TextInput::make('credits')
                     ->required()
                     ->numeric()

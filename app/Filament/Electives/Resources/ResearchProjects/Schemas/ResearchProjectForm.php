@@ -2,6 +2,7 @@
 
 namespace App\Filament\Electives\Resources\ResearchProjects\Schemas;
 
+use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -18,8 +19,12 @@ class ResearchProjectForm
                     ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                TextInput::make('supervisor')
-                    ->required(),
+                Select::make('professor_id')
+                    ->label('Professor')
+                    ->relationship('professor')
+                    ->getOptionLabelFromRecordUsing(fn (User $user): string => "{$user->name} {$user->surname}")
+                    ->searchable(['name', 'surname', 'email'])
+                    ->preload(),
                 Select::make('creator_id')
                     ->relationship('creator', 'name'),
                 TextInput::make('credits')

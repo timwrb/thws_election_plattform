@@ -16,6 +16,10 @@ class FwpmsTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('professor.name')
+                    ->label('Professor')
+                    ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
+                    ->searchable(['professor.name', 'professor.surname']),
                 TextColumn::make('credits')
                     ->numeric()
                     ->sortable(),

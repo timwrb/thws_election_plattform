@@ -16,8 +16,10 @@ class ResearchProjectsTable
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),
-                TextColumn::make('supervisor')
-                    ->searchable(),
+                TextColumn::make('professor.name')
+                    ->label('Professor')
+                    ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
+                    ->searchable(['professor.name', 'professor.surname']),
                 TextColumn::make('creator.name')
                     ->searchable(),
                 TextColumn::make('credits')

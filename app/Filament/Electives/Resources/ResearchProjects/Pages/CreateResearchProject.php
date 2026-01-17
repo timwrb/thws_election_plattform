@@ -5,11 +5,13 @@ namespace App\Filament\Electives\Resources\ResearchProjects\Pages;
 use App\Filament\Electives\Resources\ResearchProjects\ResearchProjectResource;
 use App\Models\ResearchProject;
 use App\Models\Semester;
+use App\Models\User;
 use App\Services\SemesterService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -98,10 +100,12 @@ class CreateResearchProject extends Page implements HasForms
                                 ->label('Project Description')
                                 ->rows(5)
                                 ->columnSpanFull(),
-                            TextInput::make('supervisor')
-                                ->label('Supervisor Name')
-                                ->required()
-                                ->maxLength(255)
+                            Select::make('professor_id')
+                                ->label('Professor')
+                                ->options(User::query()->pluck('name', 'id'))
+                                ->getOptionLabelUsing(fn ($value): string => User::query()->find($value)->name ?? '')
+                                ->searchable()
+                                ->preload()
                                 ->helperText('Professor or lecturer supervising this project'),
                             TextInput::make('max_students')
                                 ->label('Maximum Students')
@@ -142,7 +146,7 @@ class CreateResearchProject extends Page implements HasForms
         $data = $this->data;
 
         // Validate required fields
-        if (empty($data['title']) || empty($data['supervisor'])) {
+        if (empty($data['title'])) {
             Notification::make()
                 ->warning()
                 ->title('Missing required fields')
@@ -168,7 +172,7 @@ class CreateResearchProject extends Page implements HasForms
             $project = ResearchProject::query()->create([
                 'title' => $data['title'],
                 'description' => $data['description'] ?? null,
-                'supervisor' => $data['supervisor'],
+                'professor_id' => $data['professor_id'] ?? null,
                 'creator_id' => auth()->id(),
                 'semester_id' => $this->currentSemester->id,
                 'credits' => $this->getDefaultCreditsForSemester(),
