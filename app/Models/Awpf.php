@@ -7,31 +7,35 @@ use App\Enums\ExamType;
 use App\Enums\Language;
 use App\Traits\HasOrderedUserChoices;
 use App\Traits\HasSemester;
+use Database\Factories\AwpfFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Carbon;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string $name
  * @property string|null $content
  * @property int $credits
  * @property Language $language
  * @property ExamType $exam_type
  * @property ElectiveStatus $status
- * @property int|null $professor_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $professor_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read string $formatted_schedules
  */
 class Awpf extends Model
 {
-    /** @use HasFactory<\Database\Factories\AwpfFactory> */
+    /** @use HasFactory<AwpfFactory> */
     use HasFactory;
 
     use HasOrderedUserChoices;
     use HasSemester;
+    use HasUuids;
 
     protected function casts(): array
     {

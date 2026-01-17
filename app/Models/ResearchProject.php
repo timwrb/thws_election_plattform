@@ -7,6 +7,7 @@ use App\Traits\HasOrderedUserChoices;
 use App\Traits\HasSemester;
 use Database\Factories\ResearchProjectFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,11 +16,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string $title
  * @property string|null $description
- * @property int|null $professor_id
- * @property int|null $creator_id
+ * @property string|null $professor_id
+ * @property string|null $creator_id
  * @property int|null $semester_id
  * @property int $credits
  * @property Carbon|null $start_date
@@ -36,6 +37,7 @@ class ResearchProject extends Model
 
     use HasOrderedUserChoices;
     use HasSemester;
+    use HasUuids;
 
     protected $fillable = [
         'title',

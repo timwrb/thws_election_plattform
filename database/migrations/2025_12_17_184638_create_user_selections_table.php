@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('user_selections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('semester_id')->constrained()->cascadeOnDelete();
             $table->string('elective_type'); // Polymorphic type (Awpf or Fwpm)
-            $table->unsignedBigInteger('elective_choice_id'); // Polymorphic ID
+            $table->uuid('elective_choice_id'); // Polymorphic ID (UUID)
             $table->unsignedBigInteger('parent_elective_choice_id')->nullable();
             $table->string('status')->default('pending');
             $table->string('enrollment_type')->default('priority');

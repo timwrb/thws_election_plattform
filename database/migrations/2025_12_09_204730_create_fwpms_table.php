@@ -13,14 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('fwpms', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->text('content')->nullable();
             $table->integer('credits')->default(5);
             $table->string('language');
             $table->string('exam_type');
             $table->string('status')->default(ElectiveStatus::Draft->value);
-            $table->foreignId('professor_id')
+            $table->foreignUuid('professor_id')
                 ->nullable()
                 ->constrained('users')
                 ->nullOnDelete();

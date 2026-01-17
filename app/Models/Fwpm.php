@@ -7,20 +7,21 @@ use App\Enums\ExamType;
 use App\Enums\Language;
 use App\Traits\HasOrderedUserChoices;
 use App\Traits\HasSemester;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string $name
  * @property string|null $content
  * @property int $credits
  * @property Language $language
  * @property ExamType $exam_type
  * @property ElectiveStatus $status
- * @property int|null $professor_id
+ * @property string|null $professor_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read string $formatted_schedules
@@ -32,6 +33,7 @@ class Fwpm extends Model
 
     use HasOrderedUserChoices;
     use HasSemester;
+    use HasUuids;
 
     protected function casts(): array
     {

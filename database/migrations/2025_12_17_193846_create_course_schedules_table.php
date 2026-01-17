@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('course_schedules', function (Blueprint $table) {
             $table->id();
-            $table->morphs('schedulable');
+            $table->uuidMorphs('schedulable');
             $table->string('day_of_week');
             $table->time('start_time');
             $table->unsignedInteger('duration_minutes');

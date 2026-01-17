@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,7 +21,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string|null $salutation
  * @property string $name
  * @property string $surname
@@ -37,6 +38,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     use HasFactory, Notifiable;
 
     use HasRoles;
+    use HasUuids;
     use InteractsWithMedia;
 
     /**

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('semester_id')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->morphs('semesterable');
+            $table->uuidMorphs('semesterable');
             $table->timestamps();
 
             $table->unique(['semester_id', 'semesterable_type', 'semesterable_id'], 'semesterables_unique');

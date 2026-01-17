@@ -13,14 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('research_projects', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->foreignId('professor_id')
+            $table->foreignUuid('professor_id')
                 ->nullable()
                 ->constrained('users')
                 ->nullOnDelete();
-            $table->foreignId('creator_id')
+            $table->foreignUuid('creator_id')
                 ->nullable()
                 ->constrained('users')
                 ->nullOnDelete();
