@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  * @property int $id
  * @property string $title
  * @property string|null $description
- * @property string $supervisor
+ * @property int|null $professor_id
  * @property int|null $creator_id
  * @property int|null $semester_id
  * @property int $credits
@@ -38,7 +38,7 @@ class ResearchProject extends Model
     protected $fillable = [
         'title',
         'description',
-        'supervisor',
+        'professor_id',
         'creator_id',
         'semester_id',
         'credits',
@@ -55,6 +55,14 @@ class ResearchProject extends Model
             'start_date' => 'date',
             'end_date' => 'date',
         ];
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function professor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'professor_id');
     }
 
     /**

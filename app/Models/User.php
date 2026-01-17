@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\SemesterService;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,10 +15,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property int $id
+ * @property string|null $salutation
  * @property string $name
  * @property string $surname
  * @property string $email
@@ -27,12 +32,13 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     use HasRoles;
+    use InteractsWithMedia;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -58,6 +64,10 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
+
         if ($panel->getId() === 'electives') {
             return $this->hasRole('student');
         }
@@ -179,5 +189,16 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return $project->hasCapacity($semester);
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->getMedia('avatars')->first()->getUrl() ?: null;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatars')
+            ->singleFile();
     }
 }

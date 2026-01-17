@@ -8,6 +8,7 @@ use App\Traits\HasOrderedUserChoices;
 use App\Traits\HasSemester;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property int $credits
  * @property Language $language
  * @property ExamType $exam_type
+ * @property int|null $professor_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read string $formatted_schedules
@@ -36,6 +38,14 @@ class Awpf extends Model
             'language' => Language::class,
             'exam_type' => ExamType::class,
         ];
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function professor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'professor_id');
     }
 
     /**
