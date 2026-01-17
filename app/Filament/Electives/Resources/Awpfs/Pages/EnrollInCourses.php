@@ -121,7 +121,7 @@ class EnrollInCourses extends Page implements HasForms
         // Get current semester
         $semester = $this->getCurrentSemester();
 
-        if (! $semester instanceof \App\Models\Semester) {
+        if (! $semester instanceof Semester) {
             Notification::make()
                 ->danger()
                 ->title('No active semester')
@@ -170,13 +170,13 @@ class EnrollInCourses extends Page implements HasForms
     }
 
     /**
-     * @return array<string, int>
+     * @return array<string, string>
      */
     protected function getExistingSelections(): array
     {
         $semester = $this->getCurrentSemester();
 
-        if (! $semester instanceof \App\Models\Semester) {
+        if (! $semester instanceof Semester) {
             return [];
         }
 

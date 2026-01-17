@@ -158,7 +158,7 @@ class EnrollInCourses extends Page implements HasForms
     }
 
     /**
-     * @return array<string, int>
+     * @return array<string, string>
      */
     protected function getExistingSelections(): array
     {
