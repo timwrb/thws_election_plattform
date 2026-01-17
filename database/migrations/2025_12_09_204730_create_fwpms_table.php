@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('fwpms', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->text('content')->nullable();
+            $table->integer('credits')->default(5);
+            $table->string('language');
+            $table->string('exam_type');
+            $table->foreignId('professor_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->timestamps();
         });
     }

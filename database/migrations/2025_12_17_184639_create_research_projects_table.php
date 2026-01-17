@@ -11,18 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('research_projects', function (Blueprint $table) {
-            $table->foreignId('creator_id')
+        Schema::create('research_projects', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->foreignId('professor_id')
                 ->nullable()
-                ->after('supervisor')
                 ->constrained('users')
                 ->nullOnDelete();
-
+            $table->foreignId('creator_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+            $table->integer('credits')->default(5);
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->foreignId('semester_id')
                 ->nullable()
-                ->after('end_date')
                 ->constrained()
                 ->cascadeOnDelete();
+            $table->integer('max_students')->default(1);
+            $table->timestamps();
 
             $table->index(['semester_id', 'creator_id']);
         });
@@ -33,11 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('research_projects', function (Blueprint $table) {
-            $table->dropIndex(['semester_id', 'creator_id']);
-            $table->dropForeign(['semester_id']);
-            $table->dropForeign(['creator_id']);
-            $table->dropColumn(['creator_id', 'semester_id']);
-        });
+        Schema::dropIfExists('research_projects');
     }
 };

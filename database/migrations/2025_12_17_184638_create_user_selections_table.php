@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('elective_type'); // Polymorphic type (Awpf or Fwpm)
             $table->unsignedBigInteger('elective_choice_id'); // Polymorphic ID
             $table->unsignedBigInteger('parent_elective_choice_id')->nullable();
+            $table->string('status')->default('pending');
+            $table->string('enrollment_type')->default('priority');
             $table->timestamps();
 
             // Self-referential foreign key for ordered choices
@@ -26,9 +28,11 @@ return new class extends Migration
                 ->on('user_selections')
                 ->cascadeOnDelete();
 
-            // Index for performance
+            // Indexes for performance
             $table->index(['user_id', 'semester_id', 'elective_type']);
             $table->index(['elective_type', 'elective_choice_id']);
+            $table->index(['status', 'semester_id']);
+            $table->index(['elective_type', 'elective_choice_id', 'status']);
         });
     }
 
