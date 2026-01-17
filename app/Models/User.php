@@ -192,12 +192,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->getMedia('avatars')->first()->getUrl() ?: null;
+        return $this->getMedia('avatars')->first()?->getUrl();
     }
 
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('avatars')
+            ->useDisk('public')
             ->singleFile();
     }
 }
