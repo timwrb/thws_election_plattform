@@ -3,7 +3,7 @@
     $professor = $record->professor;
 @endphp
 
-<div class="flex items-center gap-2">
+<div class="flex items-center space-x-2">
     @if ($professor)
         @php
             $avatarUrl = $professor->getFilamentAvatarUrl();
@@ -19,18 +19,18 @@
             />
         @else
             <div
-                class="flex size-8 items-center justify-center rounded-full text-xs font-medium text-white"
+                class="flex size-10 p-1 items-center justify-center rounded-full text-sm font-semibold text-white"
                 style="background-color: {{ $bgColor }}"
             >
                 {{ $initials }}
             </div>
         @endif
 
-        <span class="text-sm text-gray-700 dark:text-gray-300">
+        <span class="text-sm text-gray-700 font-medium dark:text-gray-300">
             {{ $professor->full_name }}
         </span>
     @else
-        <span class="text-sm text-gray-400 dark:text-gray-500">
+        <span class="text-sm text-neutral-300 font-medium dark:text-gray-500">
             No professor assigned
         </span>
     @endif

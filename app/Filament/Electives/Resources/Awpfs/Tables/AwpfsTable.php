@@ -38,7 +38,7 @@ class AwpfsTable
 
                     Split::make([
                         TextColumn::make('language')
-                            ->formatStateUsing(fn (Awpf $record): string => $record->language->getShortLabel())
+                            ->formatStateUsing(fn (Awpf $record): string => $record->language->getLabel())
                             ->grow(false),
 
                         TextColumn::make('exam_type')
@@ -61,29 +61,28 @@ class AwpfsTable
                 'md' => 2,
                 'xl' => 3,
             ])
-//            ->groups([
-//                Group::make('semesters.id')
-//                    ->label('Semester')
-//                    ->getTitleFromRecordUsing(function (Awpf $record) use ($currentSemester): string {
-//                        $semester = $record->semesters->first();
-//                        if (! $semester instanceof Semester) {
-//                            return 'No Semester';
-//                        }
-//
-//                        $label = $semester->getLabel();
-//
-//                        if ($currentSemester instanceof Semester && $semester->id === $currentSemester->id) {
-//                            return $label.' (Current)';
-//                        }
-//
-//                        return $label;
-//                    })
-//                    ->collapsible(),
-//            ])
-//            ->defaultGroup('semesters.id')
-//            ->groupingSettingsHidden()
-//            ->modifyQueryUsing(fn ($query) => $query->orderBy('name'))
-//            ->recordUrl(fn (Awpf $record): string => AwpfResource::getUrl('view', ['record' => $record]))
+            ->groups([
+                Group::make('semesters.id')
+                    ->label('Semester')
+                    ->getTitleFromRecordUsing(function (Awpf $record) use ($currentSemester): string {
+                        $semester = $record->semesters->first();
+                        if (! $semester instanceof Semester) {
+                            return 'No Semester';
+                        }
+
+                        $label = $semester->getLabel();
+
+                        if ($currentSemester instanceof Semester && $semester->id === $currentSemester->id) {
+                            return $label.' (Current)';
+                        }
+
+                        return $label;
+                    })
+                    ->collapsible(),
+            ])
+            ->groupingSettingsHidden()
+            ->modifyQueryUsing(fn ($query) => $query->orderBy('name'))
+            ->recordUrl(fn (Awpf $record): string => AwpfResource::getUrl('view', ['record' => $record]))
             ->filters([])
             ->recordActions([])
             ->toolbarActions([]);

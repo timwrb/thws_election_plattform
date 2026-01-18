@@ -39,7 +39,7 @@ class AwpfInfolist
 
                                 TextEntry::make('language')
                                     ->label('Language')
-                                    ->formatStateUsing(fn (Awpf $record): string => $record->language->getShortLabel()),
+                                    ->formatStateUsing(fn (Awpf $record): string => $record->language->getLabel()),
 
                                 TextEntry::make('exam_type')
                                     ->label('Exam Type')
