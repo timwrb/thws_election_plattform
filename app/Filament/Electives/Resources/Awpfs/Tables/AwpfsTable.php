@@ -18,7 +18,7 @@ class AwpfsTable
                         ->searchable(),
                     TextColumn::make('professor.name')
                         ->label('Professor')
-                        ->formatStateUsing(fn (Awpf $record): string => $record->professor->fullName),
+                        ->formatStateUsing(fn (Awpf $record): string => $record->professor->full_name),
                     TextColumn::make('language')
                         ->badge()
                         ->searchable(),

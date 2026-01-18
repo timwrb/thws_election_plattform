@@ -7,10 +7,12 @@ use App\Models\Awpf;
 use App\Models\Fwpm;
 use App\Models\ResearchProject;
 use App\Models\Semester;
+use App\Models\User;
 use App\Models\UserSelection;
 use App\Services\SemesterService;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Auth;
 
 class EnrollmentOverviewWidget extends BaseWidget
 {
@@ -19,7 +21,7 @@ class EnrollmentOverviewWidget extends BaseWidget
     #[\Override]
     protected function getStats(): array
     {
-        $semester = $this->getCurrentSemester();
+        $semester = resolve(SemesterService::class)->getCurrentSemester();
 
         if (! $semester instanceof Semester) {
             return [
@@ -28,12 +30,19 @@ class EnrollmentOverviewWidget extends BaseWidget
                     ->color('warning'),
             ];
         }
+        if (! Auth::check()) {
+            return [
+                Stat::make('There was an error loading the data', 'Please contact administration')
+                    ->description('No semester is currently configured')
+                    ->color('warning'),
+            ];
+        }
 
-        auth()->id();
+        /* @var User $user */
+        $user = Auth::user();
 
-        // Count AWPF selections
         $awpfCount = UserSelection::query()
-            ->forUser(auth()->user())
+            ->forUser($user)
             ->forSemester($semester)
             ->where('elective_type', Awpf::class)
             ->whereIn('status', [EnrollmentStatus::Pending, EnrollmentStatus::Confirmed])
@@ -41,27 +50,23 @@ class EnrollmentOverviewWidget extends BaseWidget
 
         $maxAwpf = config('electives.max_selections.awpf', 2);
 
-        // Count FWPM selections
         $fwpmCount = UserSelection::query()
-            ->forUser(auth()->user())
+            ->forUser($user)
             ->forSemester($semester)
             ->where('elective_type', Fwpm::class)
             ->whereIn('status', [EnrollmentStatus::Pending, EnrollmentStatus::Confirmed])
             ->count();
 
         $maxFwpm = config('electives.max_selections.fwpm', 3);
-
-        // Count Research Project selections
         $researchCount = UserSelection::query()
-            ->forUser(auth()->user())
+            ->forUser($user)
             ->forSemester($semester)
             ->where('elective_type', ResearchProject::class)
             ->whereIn('status', [EnrollmentStatus::Pending, EnrollmentStatus::Confirmed])
             ->count();
 
-        // Count confirmed selections
         $confirmedCount = UserSelection::query()
-            ->forUser(auth()->user())
+            ->forUser($user)
             ->forSemester($semester)
             ->where('status', EnrollmentStatus::Confirmed)
             ->count();
@@ -87,10 +92,5 @@ class EnrollmentOverviewWidget extends BaseWidget
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color($confirmedCount > 0 ? 'success' : 'warning'),
         ];
-    }
-
-    protected function getCurrentSemester(): ?Semester
-    {
-        return app(SemesterService::class)->getCurrentSemester();
     }
 }

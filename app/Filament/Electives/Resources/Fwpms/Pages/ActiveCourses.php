@@ -27,7 +27,7 @@ class ActiveCourses extends ListRecords
     protected function getTableQuery(): Builder
     {
         return Fwpm::query()
-            ->whereHas('orderedUserChoices', function ($query): void {
+            ->whereHas('orderedUserChoices', function (\Illuminate\Contracts\Database\Query\Builder $query): void {
                 $query->where('user_id', auth()->id())
                     ->whereIn('status', ['pending', 'confirmed']);
             });

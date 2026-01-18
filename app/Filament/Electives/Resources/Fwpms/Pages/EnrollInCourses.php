@@ -9,6 +9,7 @@ use App\Models\Semester;
 use App\Models\UserSelection;
 use App\Services\EnrollmentService;
 use App\Services\SemesterService;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -21,6 +22,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\DB;
+use Override;
 
 /**
  * @property \Filament\Schemas\Schema $form
@@ -93,11 +95,11 @@ class EnrollInCourses extends Page implements HasForms
     public function save(): void
     {
         $orderedElectiveIds = collect($this->data)
-            ->filter(fn ($value): bool => ! empty($value))
+            ->reject(fn ($value): bool => blank($value))
             ->values()
             ->toArray();
 
-        if (empty($orderedElectiveIds)) {
+        if (blank($orderedElectiveIds)) {
             Notification::make()
                 ->warning()
                 ->title('No courses selected')
@@ -121,9 +123,7 @@ class EnrollInCourses extends Page implements HasForms
 
         try {
             DB::transaction(function () use ($orderedElectiveIds, $semester): void {
-                // Use EnrollmentService to register priority choices
-                $service = app(EnrollmentService::class);
-                $service->registerPriorityChoices(
+                resolve(EnrollmentService::class)->registerPriorityChoices(
                     auth()->user(),
                     $semester,
                     Fwpm::class,
@@ -138,7 +138,7 @@ class EnrollInCourses extends Page implements HasForms
                 ->send();
 
             $this->redirect(FwpmResource::getUrl('my-courses'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->danger()
                 ->title('Enrollment failed')
@@ -168,7 +168,6 @@ class EnrollInCourses extends Page implements HasForms
             return [];
         }
 
-        // Get existing selections for this user and semester
         $selections = UserSelection::query()
             ->forUser(auth()->user())
             ->forSemester($semester)
@@ -190,7 +189,7 @@ class EnrollInCourses extends Page implements HasForms
 
     protected function getCurrentSemester(): ?Semester
     {
-        return app(SemesterService::class)->getCurrentSemester();
+        return resolve(SemesterService::class)->getCurrentSemester();
     }
 
     protected function getOrdinalLabel(int $number): string
@@ -203,7 +202,7 @@ class EnrollInCourses extends Page implements HasForms
         };
     }
 
-    #[\Override]
+    #[Override]
     public function getView(): string
     {
         return 'filament.electives.resources.fwpms.pages.enroll-in-courses';

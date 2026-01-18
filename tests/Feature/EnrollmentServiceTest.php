@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Event;
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    $this->service = app(EnrollmentService::class);
+    $this->service = resolve(EnrollmentService::class);
     $this->user = User::factory()->create();
     $this->semester = Semester::factory()->year(2024)->winter()->create();
 });

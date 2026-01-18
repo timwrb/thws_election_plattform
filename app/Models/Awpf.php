@@ -8,6 +8,7 @@ use App\Enums\Language;
 use App\Traits\HasOrderedUserChoices;
 use App\Traits\HasSemester;
 use Database\Factories\AwpfFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -63,12 +64,15 @@ class Awpf extends Model
         return $this->morphMany(CourseSchedule::class, 'schedulable');
     }
 
-    public function getFormattedSchedulesAttribute(): string
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function formattedSchedules(): Attribute
     {
-        return $this->schedules()
+        return Attribute::make(get: fn () => $this->schedules()
             ->orderedByDay()
             ->get()
             ->pluck('formatted_schedule')
-            ->join(', ');
+            ->join(', '));
     }
 }

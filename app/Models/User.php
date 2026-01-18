@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +32,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read string $full_name
  */
 class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 {
@@ -63,9 +65,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         ];
     }
 
-    public function getFullNameAttribute(): string
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function fullName(): Attribute
     {
-        return "$this->salutation $this->name $this->surname";
+        return Attribute::make(get: fn () => "$this->salutation $this->name $this->surname");
     }
 
     public function canAccessPanel(Panel $panel): bool
@@ -169,7 +174,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
      */
     public function getCurrentSemester(): ?Semester
     {
-        return app(SemesterService::class)->getCurrentSemester();
+        return resolve(SemesterService::class)->getCurrentSemester();
     }
 
     /**
@@ -179,7 +184,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
      */
     public function getSemesterNumber(): ?int
     {
-        return app(SemesterService::class)->calculateSemesterNumber($this);
+        return resolve(SemesterService::class)->calculateSemesterNumber($this);
     }
 
     public function canEnrollInResearchProject(ResearchProject $project, Semester $semester): bool

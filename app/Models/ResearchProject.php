@@ -6,6 +6,7 @@ use App\Enums\ElectiveStatus;
 use App\Traits\HasOrderedUserChoices;
 use App\Traits\HasSemester;
 use Database\Factories\ResearchProjectFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -100,7 +101,8 @@ class ResearchProject extends Model
      * @param  Builder<ResearchProject>  $query
      * @return Builder<ResearchProject>
      */
-    public function scopeCreatedByStudent(Builder $query): Builder
+    #[Scope]
+    protected function createdByStudent(Builder $query): Builder
     {
         return $query->whereNotNull('creator_id');
     }
@@ -109,7 +111,8 @@ class ResearchProject extends Model
      * @param  Builder<ResearchProject>  $query
      * @return Builder<ResearchProject>
      */
-    public function scopeCreatedByAdmin(Builder $query): Builder
+    #[Scope]
+    protected function createdByAdmin(Builder $query): Builder
     {
         return $query->whereNull('creator_id');
     }
@@ -118,7 +121,8 @@ class ResearchProject extends Model
      * @param  Builder<ResearchProject>  $query
      * @return Builder<ResearchProject>
      */
-    public function scopeWithAvailableCapacity(Builder $query, Semester $semester): Builder
+    #[Scope]
+    protected function withAvailableCapacity(Builder $query, Semester $semester): Builder
     {
         return $query->whereHas('enrollments', function (Builder $q) use ($semester): void {
             $q->where('semester_id', $semester->id)

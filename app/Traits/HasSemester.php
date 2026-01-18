@@ -28,7 +28,7 @@ trait HasSemester
      * @param  Builder<static>  $query
      * @return Builder<static>
      */
-    public function scopeForSemester(Builder $query, Semester $semester): Builder
+    protected function scopeForSemester(Builder $query, Semester $semester): Builder
     {
         return $query->whereHas('semesters', function (Builder $q) use ($semester): void {
             $q->where('semesters.id', $semester->id);

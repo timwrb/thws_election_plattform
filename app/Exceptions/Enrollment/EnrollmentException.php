@@ -27,7 +27,7 @@ class EnrollmentException extends Exception
     public function render(Request $request): JsonResponse|false
     {
         if ($request->expectsJson()) {
-            return response()->json([
+            return new JsonResponse([
                 'message' => $this->getMessage(),
                 'errors' => $this->errors,
             ], 422);

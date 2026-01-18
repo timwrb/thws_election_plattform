@@ -7,7 +7,6 @@ use App\Enums\EnrollmentType;
 use App\Events\Enrollment\EnrollmentConfirmed;
 use App\Events\Enrollment\EnrollmentCreated;
 use App\Events\Enrollment\EnrollmentRejected;
-use App\Events\Enrollment\EnrollmentWithdrawn;
 use App\Events\Enrollment\PriorityChoicesRegistered;
 use App\Exceptions\Enrollment\CapacityExceededException;
 use App\Exceptions\Enrollment\DuplicateEnrollmentException;
@@ -48,7 +47,7 @@ class EnrollmentService
                 'enrollment_type' => EnrollmentType::Direct,
             ]);
 
-            EnrollmentCreated::dispatch($enrollment);
+            event(new EnrollmentCreated($enrollment));
 
             return $enrollment;
         });
@@ -78,7 +77,7 @@ class EnrollmentService
                 $orderedElectiveIds
             );
 
-            PriorityChoicesRegistered::dispatch($user, $semester, $electiveType, $selections);
+            event(new PriorityChoicesRegistered($user, $semester, $electiveType, $selections));
 
             return $selections;
         });
@@ -100,7 +99,7 @@ class EnrollmentService
 
         $selection->update(['status' => EnrollmentStatus::Withdrawn]);
 
-        EnrollmentWithdrawn::dispatch($selection);
+        event(new \App\Events\Enrollment\EnrollmentWithdrawn($selection));
     }
 
     /**
@@ -126,7 +125,7 @@ class EnrollmentService
 
         $selection->update(['status' => EnrollmentStatus::Confirmed]);
 
-        EnrollmentConfirmed::dispatch($selection);
+        event(new EnrollmentConfirmed($selection));
     }
 
     /**
@@ -142,7 +141,7 @@ class EnrollmentService
 
         $selection->update(['status' => EnrollmentStatus::Rejected]);
 
-        EnrollmentRejected::dispatch($selection);
+        event(new EnrollmentRejected($selection));
     }
 
     /**
@@ -171,7 +170,7 @@ class EnrollmentService
             ->confirmed()
             ->withElective();
 
-        if ($semester instanceof \App\Models\Semester) {
+        if ($semester instanceof Semester) {
             $query->forSemester($semester);
         }
 

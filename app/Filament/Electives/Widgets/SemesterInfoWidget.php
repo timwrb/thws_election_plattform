@@ -13,9 +13,11 @@ class SemesterInfoWidget extends Widget
 
     protected int|string|array $columnSpan = 'full';
 
-    public function getSemester(): ?Semester
+    public ?Semester $semester = null;
+
+    public function mount(): void
     {
-        return app(SemesterService::class)->getCurrentSemester();
+        $this->semester = resolve(SemesterService::class)->getCurrentSemester();
     }
 
     #[\Override]

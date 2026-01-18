@@ -5,21 +5,18 @@ use App\Models\Semester;
 use App\Models\User;
 use App\Services\SemesterService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    $this->service = app(SemesterService::class);
+    $this->service = resolve(SemesterService::class);
 });
 
 describe('getCurrentSemester', function (): void {
     it('returns winter semester for October', function (): void {
-        // Create semesters
         $ws24 = Semester::query()->create(['year' => 2024, 'season' => Season::Winter]);
-        $ss25 = Semester::query()->create(['year' => 2025, 'season' => Season::Summer]);
-
-        // Mock date to October 15, 2024
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2024, 10, 15));
+        Date::setTestNow(Date::create(2024, 10, 15));
 
         $current = $this->service->getCurrentSemester();
 
@@ -30,12 +27,9 @@ describe('getCurrentSemester', function (): void {
     });
 
     it('returns winter semester for January', function (): void {
-        // Create semesters
-        $ws24 = Semester::query()->create(['year' => 2024, 'season' => Season::Winter]);
-        $ss25 = Semester::query()->create(['year' => 2025, 'season' => Season::Summer]);
 
-        // Mock date to January 15, 2025 (belongs to WS24/25)
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2025, 1, 15));
+        $ws24 = Semester::query()->create(['year' => 2024, 'season' => Season::Winter]);
+        Date::setTestNow(Date::create(2025, 1, 15));
 
         $current = $this->service->getCurrentSemester();
 
@@ -46,10 +40,9 @@ describe('getCurrentSemester', function (): void {
     });
 
     it('returns summer semester for April', function (): void {
-        $ss25 = Semester::query()->create(['year' => 2025, 'season' => Season::Summer]);
 
-        // Mock date to April 1, 2025
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2025, 4, 1));
+        $ss25 = Semester::query()->create(['year' => 2025, 'season' => Season::Summer]);
+        Date::setTestNow(Date::create(2025, 4));
 
         $current = $this->service->getCurrentSemester();
 
@@ -62,8 +55,7 @@ describe('getCurrentSemester', function (): void {
     it('returns summer semester for September', function (): void {
         $ss25 = Semester::query()->create(['year' => 2025, 'season' => Season::Summer]);
 
-        // Mock date to September 30, 2025
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2025, 9, 30));
+        Date::setTestNow(Date::create(2025, 9, 30));
 
         $current = $this->service->getCurrentSemester();
 
@@ -74,8 +66,7 @@ describe('getCurrentSemester', function (): void {
     });
 
     it('returns null when semester does not exist in database', function (): void {
-        // Mock date to October 2024 but don't create semester
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2024, 10, 15));
+        Date::setTestNow(Date::create(2024, 10, 15));
 
         $current = $this->service->getCurrentSemester();
 
@@ -98,7 +89,6 @@ describe('getSemestersBetween', function (): void {
 
         $count = $this->service->getSemestersBetween($ss24, $ws24);
 
-        // SS24 (Apr-Sep 2024) -> WS24 (Oct 2024-Mar 2025) = 1 step forward
         expect($count)->toBe(1);
     });
 
@@ -108,7 +98,6 @@ describe('getSemestersBetween', function (): void {
 
         $count = $this->service->getSemestersBetween($ws24, $ss24);
 
-        // WS24 (Oct 2024-Mar 2025) -> SS24 (Apr-Sep 2024) = 1 step backward
         expect($count)->toBe(-1);
     });
 
@@ -118,7 +107,6 @@ describe('getSemestersBetween', function (): void {
 
         $count = $this->service->getSemestersBetween($ws23, $ws25);
 
-        // WS23 -> SS24 -> WS24 -> SS25 -> WS25 = 4 semesters
         expect($count)->toBe(4);
     });
 
@@ -128,7 +116,6 @@ describe('getSemestersBetween', function (): void {
 
         $count = $this->service->getSemestersBetween($ss23, $ws24);
 
-        // SS23 -> WS23 -> SS24 -> WS24 = 3 semesters
         expect($count)->toBe(3);
     });
 });
@@ -136,16 +123,12 @@ describe('getSemestersBetween', function (): void {
 describe('calculateSemesterNumber', function (): void {
     it('calculates semester number correctly', function (): void {
         $ws23 = Semester::query()->create(['year' => 2023, 'season' => Season::Winter]);
-        $ws25 = Semester::query()->create(['year' => 2025, 'season' => Season::Winter]);
-
+        Semester::query()->create(['year' => 2025, 'season' => Season::Winter]);
         $user = User::factory()->create(['start_semester_id' => $ws23->id]);
-
-        // Mock current date to be in WS25
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2025, 10, 15));
+        Date::setTestNow(Date::create(2025, 10, 15));
 
         $semesterNumber = $this->service->calculateSemesterNumber($user);
 
-        // Started in WS23, now in WS25 = 5th semester
         expect($semesterNumber)->toBe(5);
     });
 
@@ -160,9 +143,7 @@ describe('calculateSemesterNumber', function (): void {
     it('returns null when current semester does not exist', function (): void {
         $ws23 = Semester::query()->create(['year' => 2023, 'season' => Season::Winter]);
         $user = User::factory()->create(['start_semester_id' => $ws23->id]);
-
-        // Mock current date to non-existent semester
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2026, 10, 15));
+        Date::setTestNow(Date::create(2026, 10, 15));
 
         $semesterNumber = $this->service->calculateSemesterNumber($user);
 
@@ -172,9 +153,7 @@ describe('calculateSemesterNumber', function (): void {
     it('returns 1 for first semester', function (): void {
         $ws24 = Semester::query()->create(['year' => 2024, 'season' => Season::Winter]);
         $user = User::factory()->create(['start_semester_id' => $ws24->id]);
-
-        // Mock current date to be in WS24 (same as start)
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2024, 10, 15));
+        Date::setTestNow(Date::create(2024, 10, 15));
 
         $semesterNumber = $this->service->calculateSemesterNumber($user);
 
@@ -188,9 +167,7 @@ describe('semester status checks', function (): void {
         $this->ss24 = Semester::query()->create(['year' => 2024, 'season' => Season::Summer]);
         $this->ws24 = Semester::query()->create(['year' => 2024, 'season' => Season::Winter]);
         $this->ss25 = Semester::query()->create(['year' => 2025, 'season' => Season::Summer]);
-
-        // Set current date to WS24
-        Carbon\Carbon::setTestNow(Carbon\Carbon::create(2024, 10, 15));
+        Date::setTestNow(Date::create(2024, 10, 15));
     });
 
     it('identifies past semester correctly', function (): void {

@@ -107,11 +107,11 @@ class EnrollInCourses extends Page implements HasForms
         $data = $this->form->getState();
 
         $orderedElectiveIds = collect($data)
-            ->filter(fn ($value): bool => ! empty($value))
+            ->reject(fn ($value): bool => blank($value))
             ->values()
             ->toArray();
 
-        if (empty($orderedElectiveIds)) {
+        if (blank($orderedElectiveIds)) {
             Notification::make()
                 ->warning()
                 ->title('No courses selected')
@@ -161,7 +161,7 @@ class EnrollInCourses extends Page implements HasForms
     /**
      * @return array<string, string>
      */
-    protected function getExistingSelections(SemesterService $semesterService, #[CurrentUser] User $user): array
+    protected function getExistingSelections(SemesterService $semesterService, User $user): array
     {
         $semester = $semesterService->getCurrentSemester();
 

@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class MySelectionsWidget extends BaseWidget
 {
@@ -20,6 +21,7 @@ class MySelectionsWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     public function table(Table $table): Table
     {
         return $table
@@ -45,15 +47,7 @@ class MySelectionsWidget extends BaseWidget
                     ->label('Course / Project')
                     ->searchable()
                     ->limit(50)
-                    ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
-
-                        if (strlen($state) <= 50) {
-                            return null;
-                        }
-
-                        return $state;
-                    }),
+                    ->tooltip(fn (TextColumn $column): ?string => strlen((string) $column->getState()) > 50 ? $column->getState() : null),
 
                 TextColumn::make('priority')
                     ->label('Priority')
@@ -87,28 +81,23 @@ class MySelectionsWidget extends BaseWidget
     }
 
     /**
-     * @return Builder<UserSelection>|null
+     * @return Builder<UserSelection>
      */
-    protected function getTableQuery(): ?Builder
+    protected function getTableQuery(): Builder
     {
-        $semester = $this->getCurrentSemester();
+        $semester = resolve(SemesterService::class)->getCurrentSemester();
 
-        if (! $semester instanceof Semester) {
-            return UserSelection::query()->whereRaw('1 = 0'); // Empty query
+        if (! $semester instanceof Semester || ! Auth::check()) {
+            return UserSelection::query()->whereRaw('1 = 0');
         }
 
         return UserSelection::query()
-            ->forUser(auth()->user())
+            ->forUser(Auth::user())
             ->forSemester($semester)
             ->with('elective')
             ->whereIn('status', [
                 EnrollmentStatus::Pending,
                 EnrollmentStatus::Confirmed,
             ]);
-    }
-
-    protected function getCurrentSemester(): ?Semester
-    {
-        return app(SemesterService::class)->getCurrentSemester();
     }
 }

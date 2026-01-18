@@ -25,7 +25,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
 /**
- * @property \Filament\Schemas\Schema $form
+ * @property Schema $form
  */
 class CreateResearchProject extends Page implements HasForms
 {
@@ -48,7 +48,7 @@ class CreateResearchProject extends Page implements HasForms
 
     public function mount(): void
     {
-        $this->currentSemester = app(SemesterService::class)->getCurrentSemester();
+        $this->currentSemester = resolve(SemesterService::class)->getCurrentSemester();
 
         if (! $this->currentSemester instanceof Semester) {
             Notification::make()
@@ -63,7 +63,6 @@ class CreateResearchProject extends Page implements HasForms
             return;
         }
 
-        // Pre-fill with defaults
         $this->form->fill([
             'max_students' => 1,
         ]);
@@ -145,8 +144,7 @@ class CreateResearchProject extends Page implements HasForms
     {
         $data = $this->data;
 
-        // Validate required fields
-        if (empty($data['title'])) {
+        if (data_get($data, 'title', '') === '') {
             Notification::make()
                 ->warning()
                 ->title('Missing required fields')
@@ -156,7 +154,6 @@ class CreateResearchProject extends Page implements HasForms
             return;
         }
 
-        // Ensure user has active semester
         if (! $this->currentSemester instanceof Semester) {
             Notification::make()
                 ->danger()
@@ -168,8 +165,7 @@ class CreateResearchProject extends Page implements HasForms
         }
 
         try {
-            // Create the research project with the authenticated user as creator
-            $project = ResearchProject::query()->create([
+            ResearchProject::query()->create([
                 'title' => $data['title'],
                 'description' => $data['description'] ?? null,
                 'professor_id' => $data['professor_id'] ?? null,
@@ -199,8 +195,6 @@ class CreateResearchProject extends Page implements HasForms
 
     protected function getDefaultCreditsForSemester(): int
     {
-        // Default credits for research projects is typically 5 ECTS
-        // This could be customized based on semester_number if needed
         return 5;
     }
 

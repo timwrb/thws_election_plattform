@@ -12,6 +12,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
+use UnitEnum;
 
 class ResearchProjectResource extends Resource
 {
@@ -19,30 +21,22 @@ class ResearchProjectResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBeaker;
 
-    protected static string|null|\UnitEnum $navigationGroup = 'Research Projects';
+    protected static string|null|UnitEnum $navigationGroup = 'Research Projects';
 
     protected static ?string $navigationLabel = 'Browse Projects';
 
     protected static ?int $navigationSort = 30;
 
-    #[\Override]
+    #[Override]
     public static function form(Schema $schema): Schema
     {
         return ResearchProjectForm::configure($schema);
     }
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return ResearchProjectsTable::configure($table);
-    }
-
-    #[\Override]
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

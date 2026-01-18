@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Enums\Season;
 use App\Models\Semester;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 
 class SemesterService
 {
@@ -15,7 +15,7 @@ class SemesterService
      */
     public function getCurrentSemester(): ?Semester
     {
-        $now = Carbon::now();
+        $now = Date::now();
         $month = $now->month;
         $year = $now->year;
 
