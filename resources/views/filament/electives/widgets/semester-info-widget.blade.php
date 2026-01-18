@@ -1,10 +1,6 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        @php
-            $semester = $this->getSemester();
-        @endphp
-
-        @if($semester)
+        @if($this->semester)
             <div class="flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-500/10">
                     <x-filament::icon
@@ -18,7 +14,7 @@
                         Current Semester: {{ $semester->getLabel() }}
                     </h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ $semester->season->value }} {{ $semester->year }}
+                        {{ $this->semester->season->value }} {{ $this->semester->year }}
                     </p>
                 </div>
 
