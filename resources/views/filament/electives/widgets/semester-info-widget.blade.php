@@ -11,10 +11,10 @@
 
                 <div class="flex-1">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Current Semester: {{ $semester->getLabel() }}
+                        Current Semester: {{ $this->semester->getLabel() }}
                     </h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ $this->semester->season->value }} {{ $this->semester->year }}
+                B        {{ $this->semester->season->value }} {{ $this->semester->year }}
                     </p>
                 </div>
 
