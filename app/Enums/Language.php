@@ -16,4 +16,17 @@ enum Language: string implements HasLabel
             self::German => __('Deutsch'),
         };
     }
+
+    public function getFlag(): string
+    {
+        return match ($this) {
+            self::English => '🇬🇧',
+            self::German => '🇩🇪',
+        };
+    }
+
+    public function getShortLabel(): string
+    {
+        return $this->getFlag().' '.$this->getLabel();
+    }
 }
