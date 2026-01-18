@@ -5,6 +5,7 @@ namespace App\Filament\Electives\Resources\Awpfs;
 use App\Filament\Electives\Resources\Awpfs\Pages\ActiveCourses;
 use App\Filament\Electives\Resources\Awpfs\Pages\EnrollInCourses;
 use App\Filament\Electives\Resources\Awpfs\Pages\ListAwpfs;
+use App\Filament\Electives\Resources\Awpfs\Pages\ViewAwpf;
 use App\Filament\Electives\Resources\Awpfs\Tables\AwpfsTable;
 use App\Models\Awpf;
 use BackedEnum;
@@ -35,6 +36,7 @@ class AwpfResource extends Resource
     {
         return [
             'index' => ListAwpfs::route('/'),
+            'view' => ViewAwpf::route('/{record}'),
             'active' => ActiveCourses::route('/active'),
             'enroll' => EnrollInCourses::route('/enroll'),
         ];
