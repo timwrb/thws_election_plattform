@@ -17,6 +17,9 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property Awpf $record
+ */
 class ViewAwpf extends ViewRecord
 {
     protected static string $resource = AwpfResource::class;

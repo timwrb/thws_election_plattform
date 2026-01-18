@@ -14,6 +14,7 @@ use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
 use Illuminate\Support\Facades\Auth;
 
 class AwpfInfolist
@@ -26,7 +27,7 @@ class AwpfInfolist
                     ->schema([
                         TextEntry::make('name')
                             ->label('Course Name')
-                            ->size(TextEntry\TextEntrySize::Large)
+                            ->size(TextSize::Large)
                             ->weight('bold')
                             ->columnSpanFull(),
 

@@ -8,6 +8,7 @@ use App\Models\Awpf;
 use App\Models\Semester;
 use App\Services\SemesterService;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -30,7 +31,7 @@ class AwpfsTable
                 Stack::make([
                     TextColumn::make('name')
                         ->weight(FontWeight::SemiBold)
-                        ->size(TextColumn\TextColumnSize::Large)
+                        ->size(TextSize::Large)
                         ->searchable(),
 
                     ProfessorColumn::make('professor'),
@@ -52,7 +53,7 @@ class AwpfsTable
 
                     TextColumn::make('formatted_schedules')
                         ->color('gray')
-                        ->size(TextColumn\TextColumnSize::Small)
+                        ->size(TextSize::Small)
                         ->placeholder('No schedule'),
                 ])->space(2),
             ])
@@ -60,29 +61,29 @@ class AwpfsTable
                 'md' => 2,
                 'xl' => 3,
             ])
-            ->groups([
-                Group::make('semesters.id')
-                    ->label('Semester')
-                    ->getTitleFromRecordUsing(function (Awpf $record) use ($currentSemester): string {
-                        $semester = $record->semesters->first();
-                        if (! $semester instanceof Semester) {
-                            return 'No Semester';
-                        }
-
-                        $label = $semester->getLabel();
-
-                        if ($currentSemester instanceof Semester && $semester->id === $currentSemester->id) {
-                            return $label.' (Current)';
-                        }
-
-                        return $label;
-                    })
-                    ->collapsible(),
-            ])
-            ->defaultGroup('semesters.id')
-            ->groupingSettingsHidden()
-            ->modifyQueryUsing(fn ($query) => $query->orderBy('name'))
-            ->recordUrl(fn (Awpf $record): string => AwpfResource::getUrl('view', ['record' => $record]))
+//            ->groups([
+//                Group::make('semesters.id')
+//                    ->label('Semester')
+//                    ->getTitleFromRecordUsing(function (Awpf $record) use ($currentSemester): string {
+//                        $semester = $record->semesters->first();
+//                        if (! $semester instanceof Semester) {
+//                            return 'No Semester';
+//                        }
+//
+//                        $label = $semester->getLabel();
+//
+//                        if ($currentSemester instanceof Semester && $semester->id === $currentSemester->id) {
+//                            return $label.' (Current)';
+//                        }
+//
+//                        return $label;
+//                    })
+//                    ->collapsible(),
+//            ])
+//            ->defaultGroup('semesters.id')
+//            ->groupingSettingsHidden()
+//            ->modifyQueryUsing(fn ($query) => $query->orderBy('name'))
+//            ->recordUrl(fn (Awpf $record): string => AwpfResource::getUrl('view', ['record' => $record]))
             ->filters([])
             ->recordActions([])
             ->toolbarActions([]);
