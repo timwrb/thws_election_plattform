@@ -213,4 +213,41 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->useDisk('public')
             ->singleFile();
     }
+
+    /**
+     * Get initials from name and surname.
+     */
+    public function getInitials(): string
+    {
+        $initials = mb_strtoupper(mb_substr($this->name, 0, 1));
+
+        if (filled($this->surname)) {
+            $initials .= mb_strtoupper(mb_substr($this->surname, 0, 1));
+        }
+
+        return $initials;
+    }
+
+    /**
+     * Get a consistent avatar background color based on the user's name.
+     *
+     * @return string Hex color code (e.g., '#3B82F6')
+     */
+    public function getAvatarColor(): string
+    {
+        $colors = [
+            '#3B82F6', // blue-500
+            '#10B981', // emerald-500
+            '#8B5CF6', // violet-500
+            '#F59E0B', // amber-500
+            '#EF4444', // red-500
+            '#EC4899', // pink-500
+            '#06B6D4', // cyan-500
+            '#84CC16', // lime-500
+        ];
+
+        $hash = crc32($this->name.$this->surname);
+
+        return $colors[abs($hash) % count($colors)];
+    }
 }
