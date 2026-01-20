@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Awpfs\Tables;
 
 use App\Enums\ExamType;
 use App\Enums\Language;
+use App\Filament\Tables\Columns\ProfessorColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -23,10 +24,7 @@ class AwpfsTable
                     ->sortable()
                     ->weight('medium'),
 
-                TextColumn::make('professor.name')
-                    ->label('Professor')
-                    ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
-                    ->searchable(['professor.name', 'professor.surname']),
+                ProfessorColumn::make('professor'),
 
                 TextColumn::make('credits')
                     ->label('ECTS')
