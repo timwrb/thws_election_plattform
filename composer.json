@@ -11,12 +11,14 @@
         "bezhansalleh/filament-shield": "^4.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.5",
+        "filament/spatie-laravel-settings-plugin": "^4.0",
         "laravel/fortify": "^1.30",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "nunomaduro/essentials": "^1.0",
         "spatie/laravel-medialibrary": "^11.17",
-        "spatie/laravel-permission": "^6.23"
+        "spatie/laravel-permission": "^6.23",
+        "spatie/laravel-settings": "^3.6"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.1",
