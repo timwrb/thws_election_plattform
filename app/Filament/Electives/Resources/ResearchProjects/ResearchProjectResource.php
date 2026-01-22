@@ -4,12 +4,10 @@ namespace App\Filament\Electives\Resources\ResearchProjects;
 
 use App\Filament\Electives\Resources\ResearchProjects\Pages\CreateResearchProject;
 use App\Filament\Electives\Resources\ResearchProjects\Pages\ListResearchProjects;
-use App\Filament\Electives\Resources\ResearchProjects\Schemas\ResearchProjectForm;
 use App\Filament\Electives\Resources\ResearchProjects\Tables\ResearchProjectsTable;
 use App\Models\ResearchProject;
 use BackedEnum;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Override;
@@ -26,12 +24,6 @@ class ResearchProjectResource extends Resource
     protected static ?string $navigationLabel = 'Browse Projects';
 
     protected static ?int $navigationSort = 30;
-
-    #[Override]
-    public static function form(Schema $schema): Schema
-    {
-        return ResearchProjectForm::configure($schema);
-    }
 
     #[Override]
     public static function table(Table $table): Table

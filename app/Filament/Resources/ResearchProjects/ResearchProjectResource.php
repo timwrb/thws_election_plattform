@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
 class ResearchProjectResource extends Resource
 {
@@ -30,30 +31,22 @@ class ResearchProjectResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    #[\Override]
+    #[Override]
     public static function form(Schema $schema): Schema
     {
         return ResearchProjectForm::configure($schema);
     }
 
-    #[\Override]
+    #[Override]
     public static function infolist(Schema $schema): Schema
     {
         return ResearchProjectInfolist::configure($schema);
     }
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return ResearchProjectsTable::configure($table);
-    }
-
-    #[\Override]
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
