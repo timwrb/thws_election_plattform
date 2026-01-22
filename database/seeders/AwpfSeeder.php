@@ -32,6 +32,7 @@ class AwpfSeeder extends Seeder
 
         Awpf::factory()->create([
             'name' => 'Advanced Web Development',
+            'course_url' => 'https://www.thws.de/courses/advanced-web-development',
         ])->schedules()->createMany([
             [
                 'day_of_week' => DayOfWeek::Monday,

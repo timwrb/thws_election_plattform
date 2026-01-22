@@ -32,6 +32,7 @@ class FwpmSeeder extends Seeder
 
         Fwpm::factory()->create([
             'name' => 'Mobile Application Development',
+            'course_url' => 'https://www.thws.de/courses/mobile-application-development',
         ])->schedules()->createMany([
             [
                 'day_of_week' => DayOfWeek::Tuesday,

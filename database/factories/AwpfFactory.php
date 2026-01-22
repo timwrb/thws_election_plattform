@@ -25,6 +25,7 @@ class AwpfFactory extends Factory
             'credits' => fake()->randomElement([5, 10, 15]),
             'language' => fake()->randomElement(Language::cases()),
             'exam_type' => fake()->randomElement(ExamType::cases()),
+            'course_url' => fake()->url(),
         ];
     }
 

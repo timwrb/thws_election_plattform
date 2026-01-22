@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property ExamType $exam_type
  * @property ElectiveStatus $status
  * @property string|null $professor_id
+ * @property string|null $course_url
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read string $formatted_schedules
