@@ -4,9 +4,9 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    Role::firstOrCreate(['name' => 'professor', 'guard_name' => 'web']);
-    Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
-    Role::firstOrCreate(['name' => 'student', 'guard_name' => 'web']);
+    Role::query()->firstOrCreate(['name' => 'professor', 'guard_name' => 'web']);
+    Role::query()->firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+    Role::query()->firstOrCreate(['name' => 'student', 'guard_name' => 'web']);
 });
 
 it('redirects unauthenticated users to login', function () {
