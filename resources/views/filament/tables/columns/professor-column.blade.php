@@ -19,7 +19,7 @@
             />
         @else
             <div
-                class="flex size-10 p-1 items-center justify-center rounded-full text-sm font-semibold text-white"
+                class="flex size-8 p-1 items-center justify-center rounded-full text-sm font-semibold text-white"
                 style="background-color: {{ $bgColor }}"
             >
                 {{ $initials }}
@@ -30,7 +30,7 @@
             {{ $professor->full_name }}
         </span>
     @else
-        <span class="text-sm text-neutral-300 font-medium dark:text-gray-500">
+        <span class="text-sm text-neutral-300 dark:text-gray-500">
             No professor assigned
         </span>
     @endif
