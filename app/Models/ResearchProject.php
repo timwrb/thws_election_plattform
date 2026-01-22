@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * @property string $id
@@ -31,7 +33,7 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-class ResearchProject extends Model
+class ResearchProject extends Model implements HasMedia
 {
     /** @use HasFactory<ResearchProjectFactory> */
     use HasFactory;
@@ -39,6 +41,7 @@ class ResearchProject extends Model
     use HasOrderedUserChoices;
     use HasSemester;
     use HasUuids;
+    use InteractsWithMedia;
 
     protected $fillable = [
         'title',
@@ -165,5 +168,11 @@ class ResearchProject extends Model
     public function isCreatedBy(User $user): bool
     {
         return $this->creator_id === $user->id;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('attachments')
+            ->useDisk('public');
     }
 }
