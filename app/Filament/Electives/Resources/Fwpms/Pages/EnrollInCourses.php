@@ -9,6 +9,7 @@ use App\Models\Semester;
 use App\Models\UserSelection;
 use App\Services\EnrollmentService;
 use App\Services\SemesterService;
+use App\Settings\FwpmSettings;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
@@ -51,7 +52,7 @@ class EnrollInCourses extends Page implements HasForms
 
     public function form(Schema $schema): Schema
     {
-        $maxSelections = config('electives.max_selections.fwpm', 3);
+        $maxSelections = resolve(FwpmSettings::class)->maxSelections;
         $availableCourses = $this->getAvailableCourses();
 
         $fields = [];

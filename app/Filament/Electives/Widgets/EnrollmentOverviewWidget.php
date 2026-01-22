@@ -10,6 +10,8 @@ use App\Models\Semester;
 use App\Models\User;
 use App\Models\UserSelection;
 use App\Services\SemesterService;
+use App\Settings\AwpfSettings;
+use App\Settings\FwpmSettings;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +50,7 @@ class EnrollmentOverviewWidget extends BaseWidget
             ->whereIn('status', [EnrollmentStatus::Pending, EnrollmentStatus::Confirmed])
             ->count();
 
-        $maxAwpf = config('electives.max_selections.awpf', 2);
+        $maxAwpf = resolve(AwpfSettings::class)->maxSelections;
 
         $fwpmCount = UserSelection::query()
             ->forUser($user)
@@ -57,7 +59,7 @@ class EnrollmentOverviewWidget extends BaseWidget
             ->whereIn('status', [EnrollmentStatus::Pending, EnrollmentStatus::Confirmed])
             ->count();
 
-        $maxFwpm = config('electives.max_selections.fwpm', 3);
+        $maxFwpm = resolve(FwpmSettings::class)->maxSelections;
         $researchCount = UserSelection::query()
             ->forUser($user)
             ->forSemester($semester)

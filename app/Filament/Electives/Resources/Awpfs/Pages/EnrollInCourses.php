@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserSelection;
 use App\Services\EnrollmentService;
 use App\Services\SemesterService;
+use App\Settings\AwpfSettings;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
@@ -59,7 +60,7 @@ class EnrollInCourses extends Page implements HasForms
 
     public function form(Schema $schema): Schema
     {
-        $maxSelections = config('electives.max_selections.awpf', 2);
+        $maxSelections = resolve(AwpfSettings::class)->maxSelections;
         $availableCourses = Awpf::query()
             ->pluck('name', 'id')
             ->toArray();
