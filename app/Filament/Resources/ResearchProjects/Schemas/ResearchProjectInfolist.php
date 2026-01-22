@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ResearchProjects\Schemas;
 
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -67,6 +68,32 @@ class ResearchProjectInfolist
                     ])
                     ->columnSpanFull()
                     ->collapsible(),
+
+                Section::make('Attachments')
+                    ->schema([
+                        RepeatableEntry::make('media')
+                            ->label('')
+                            ->schema([
+                                TextEntry::make('file_name')
+                                    ->label('File Name')
+                                    ->icon('heroicon-o-document')
+                                    ->url(fn ($record): string => $record->getUrl(), shouldOpenInNewTab: true)
+                                    ->color('primary'),
+
+                                TextEntry::make('human_readable_size')
+                                    ->label('Size')
+                                    ->icon('heroicon-o-archive-box'),
+
+                                TextEntry::make('mime_type')
+                                    ->label('Type')
+                                    ->badge(),
+                            ])
+                            ->columns(3)
+                            ->visible(fn ($record): bool => $record->getMedia('attachments')->isNotEmpty()),
+                    ])
+                    ->columnSpanFull()
+                    ->collapsible()
+                    ->visible(fn ($record): bool => $record->getMedia('attachments')->isNotEmpty()),
 
                 Section::make('Metadata')
                     ->schema([

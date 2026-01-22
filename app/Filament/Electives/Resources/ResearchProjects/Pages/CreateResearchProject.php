@@ -12,6 +12,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -121,6 +122,28 @@ class CreateResearchProject extends Page implements HasForms
                                 ->after('start_date'),
                         ])
                         ->columns(2),
+                    Section::make('Attachments')
+                        ->description('Upload relevant files for this research project (max 5 files)')
+                        ->schema([
+                            SpatieMediaLibraryFileUpload::make('attachments')
+                                ->collection('attachments')
+                                ->multiple()
+                                ->reorderable()
+                                ->maxFiles(5)
+                                ->helperText('You can upload up to 5 files (PDF, DOC, DOCX, XLS, XLSX, images)')
+                                ->acceptedFileTypes([
+                                    'application/pdf',
+                                    'application/msword',
+                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                    'application/vnd.ms-excel',
+                                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                    'image/jpeg',
+                                    'image/png',
+                                    'image/gif',
+                                ])
+                                ->maxSize(10240)
+                                ->columnSpanFull(),
+                        ]),
                 ])
                     ->livewireSubmitHandler('save')
                     ->footer([
@@ -165,7 +188,7 @@ class CreateResearchProject extends Page implements HasForms
         }
 
         try {
-            ResearchProject::query()->create([
+            $project = ResearchProject::query()->create([
                 'title' => $data['title'],
                 'description' => $data['description'] ?? null,
                 'professor_id' => $data['professor_id'] ?? null,
@@ -176,6 +199,16 @@ class CreateResearchProject extends Page implements HasForms
                 'end_date' => $data['end_date'] ?? null,
                 'max_students' => $data['max_students'] ?? 1,
             ]);
+
+            // Handle file attachments if present
+            if (isset($data['attachments']) && is_array($data['attachments'])) {
+                foreach ($data['attachments'] as $attachment) {
+                    if (is_string($attachment)) {
+                        $project->addMediaFromDisk($attachment, config('filament.default_filesystem_disk', 'public'))
+                            ->toMediaCollection('attachments');
+                    }
+                }
+            }
 
             Notification::make()
                 ->success()

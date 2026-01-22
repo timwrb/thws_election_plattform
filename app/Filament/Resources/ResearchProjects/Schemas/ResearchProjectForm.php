@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ResearchProjects\Schemas;
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -82,6 +83,30 @@ class ResearchProjectForm
                                     ->minDate(fn (Get $get): mixed => $get('start_date'))
                                     ->after('start_date'),
                             ]),
+                    ]),
+
+                Section::make('Attachments')
+                    ->description('Upload relevant files for this research project (max 5 files)')
+                    ->columnSpanFull()
+                    ->schema([
+                        SpatieMediaLibraryFileUpload::make('attachments')
+                            ->collection('attachments')
+                            ->multiple()
+                            ->reorderable()
+                            ->maxFiles(5)
+                            ->helperText('You can upload up to 5 files (PDF, DOC, DOCX, XLS, XLSX, images)')
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'image/jpeg',
+                                'image/png',
+                                'image/gif',
+                            ])
+                            ->maxSize(10240)
+                            ->columnSpanFull(),
                     ]),
             ]);
     }
