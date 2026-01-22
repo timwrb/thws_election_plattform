@@ -2,52 +2,89 @@
 
 namespace App\Filament\Electives\Resources\Fwpms\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use App\Filament\Electives\Resources\Fwpms\FwpmResource;
+use App\Filament\Tables\Columns\ProfessorColumn;
+use App\Models\Fwpm;
+use App\Models\Semester;
+use App\Services\SemesterService;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 
 class FwpmsTable
 {
     public static function configure(Table $table): Table
     {
+        $semesterService = resolve(SemesterService::class);
+        $currentSemester = $semesterService->getCurrentSemester();
+
         return $table
+            ->query(
+                Fwpm::query()
+                    ->with(['professor', 'schedules', 'semesters'])
+            )
             ->columns([
-                TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('professor.name')
-                    ->label('Professor')
-                    ->formatStateUsing(fn ($record): string => $record->professor ? "{$record->professor->name} {$record->professor->surname}" : '-')
-                    ->searchable(['professor.name', 'professor.surname']),
-                TextColumn::make('credits')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('language')
-                    ->badge()
-                    ->searchable(),
-                TextColumn::make('exam_type')
-                    ->badge()
-                    ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Stack::make([
+                    TextColumn::make('name')
+                        ->weight(FontWeight::SemiBold)
+                        ->size(TextSize::Large)
+                        ->searchable(),
+
+                    ProfessorColumn::make('professor'),
+
+                    Split::make([
+                        TextColumn::make('language')
+                            ->formatStateUsing(fn (Fwpm $record): string => $record->language->getLabel())
+                            ->grow(false),
+
+                        TextColumn::make('exam_type')
+                            ->icon(fn (Fwpm $record) => $record->exam_type->getIcon())
+                            ->formatStateUsing(fn (Fwpm $record): string => $record->exam_type->getShortLabel())
+                            ->grow(false),
+
+                        TextColumn::make('credits')
+                            ->formatStateUsing(fn (Fwpm $record): string => $record->credits.' CP')
+                            ->grow(false),
+                    ])->from('sm'),
+
+                    TextColumn::make('formatted_schedules')
+                        ->color('gray')
+                        ->size(TextSize::Small)
+                        ->placeholder('No schedule'),
+                ])->space(2),
             ])
-            ->filters([
-                //
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
             ])
-            ->recordActions([
-                EditAction::make(),
+            ->groups([
+                Group::make('semesters.id')
+                    ->label('Semester')
+                    ->getTitleFromRecordUsing(function (Fwpm $record) use ($currentSemester): string {
+                        $semester = $record->semesters->first();
+                        if (! $semester instanceof Semester) {
+                            return 'No Semester';
+                        }
+
+                        $label = $semester->getLabel();
+
+                        if ($currentSemester instanceof Semester && $semester->id === $currentSemester->id) {
+                            return $label.' (Current)';
+                        }
+
+                        return $label;
+                    })
+                    ->collapsible(),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->groupingSettingsHidden()
+            ->modifyQueryUsing(fn ($query) => $query->orderBy('name'))
+            ->recordUrl(fn (Fwpm $record): string => FwpmResource::getUrl('view', ['record' => $record]))
+            ->filters([])
+            ->recordActions([])
+            ->toolbarActions([]);
     }
 }
