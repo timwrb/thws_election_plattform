@@ -37,4 +37,22 @@ enum ExamType: string implements HasLabel
             self::Portfolio => 'Portfolio',
         };
     }
+
+    public static function fromGermanType(string $germanType): self
+    {
+        // Handle combined types (e.g., "Kolloquium#Praktische Studienleistung")
+        // Take the first type if multiple exist
+        $firstType = explode('#', $germanType)[0];
+        $trimmedType = trim($firstType);
+
+        // Translate German exam type to English label
+        $translatedType = __($trimmedType);
+
+        return match ($translatedType) {
+            'Written Exam' => self::Written,
+            'Oral Exam' => self::Oral,
+            'Portfolio Assessment' => self::Portfolio,
+            default => self::Written, // Default fallback
+        };
+    }
 }

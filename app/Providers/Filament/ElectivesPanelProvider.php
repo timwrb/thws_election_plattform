@@ -10,6 +10,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -33,6 +34,7 @@ class ElectivesPanelProvider extends PanelProvider
             ])
             ->topNavigation()
             ->login()
+            ->sidebarWidth(Width::FiveExtraLarge->value)
             ->spa(hasPrefetching: true)
             ->darkModeBrandLogo(asset('images/thws_logo_mini.png'))
             ->brandLogo(asset('images/thws-logo.png'))

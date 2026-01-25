@@ -15,6 +15,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RoleSeeder::class,
+            SemesterSeeder::class,
+            StudyProgramSeeder::class,
+            FwpmSeeder::class,
         ]);
 
         Role::firstOrCreate(['name' => 'student']);

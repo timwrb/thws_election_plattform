@@ -21,8 +21,10 @@ class FwpmsTable
             ->columns([
                 TextColumn::make('name')
                     ->label('Course Name')
-                    ->searchable()
-                    ->sortable()
+                    ->searchable(['name_english', 'name_german'])
+                    ->sortable(query: function ($query, $direction) {
+                        return $query->orderBy('name_english', $direction);
+                    })
                     ->weight('medium'),
 
                 ProfessorColumn::make('professor'),
@@ -93,6 +95,6 @@ class FwpmsTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('name');
+            ->defaultSort('name_english');
     }
 }

@@ -44,7 +44,7 @@ it('notifies professor when student enrolls in their AWPF course', function (): 
 it('notifies professor when student enrolls in their FWPM course', function (): void {
     $fwpm = Fwpm::factory()->create([
         'professor_id' => $this->professor->id,
-        'name' => 'Mobile Application Development',
+        'name_english' => 'Mobile Application Development',
     ]);
 
     $this->service->registerPriorityChoices(

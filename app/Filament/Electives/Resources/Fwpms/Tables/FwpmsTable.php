@@ -32,7 +32,7 @@ class FwpmsTable
                     TextColumn::make('name')
                         ->weight(FontWeight::SemiBold)
                         ->size(TextSize::Large)
-                        ->searchable(),
+                        ->searchable(['name_english', 'name_german']),
 
                     ProfessorColumn::make('professor'),
 
@@ -58,8 +58,8 @@ class FwpmsTable
                 ])->space(2),
             ])
             ->contentGrid([
-                'md' => 2,
-                'xl' => 3,
+                'md' => 1,
+                'xl' => 1,
             ])
             ->groups([
                 Group::make('semesters.id')
@@ -81,7 +81,7 @@ class FwpmsTable
                     ->collapsible(),
             ])
             ->groupingSettingsHidden()
-            ->modifyQueryUsing(fn ($query) => $query->orderBy('name'))
+            ->modifyQueryUsing(fn ($query) => $query->orderBy('name_english'))
             ->recordUrl(fn (Fwpm $record): string => FwpmResource::getUrl('view', ['record' => $record]))
             ->filters([])
             ->recordActions([])

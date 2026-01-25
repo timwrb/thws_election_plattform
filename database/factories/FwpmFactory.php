@@ -20,11 +20,27 @@ class FwpmFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->words(3, true),
-            'content' => fake()->paragraphs(3, true),
+            'fiwis_id' => fake()->unique()->numberBetween(100000, 999999),
+            'module_number' => fake()->numerify('5003###'),
+            'name_german' => fake()->words(3, true),
+            'name_english' => fake()->words(3, true),
+            'contents' => fake()->paragraphs(3, true),
             'credits' => fake()->randomElement([5, 10, 15]),
+            'max_participants' => fake()->numberBetween(15, 30),
+            'hours_per_week' => fake()->randomElement([2.0, 4.0, 6.0]),
+            'type_of_class' => fake()->randomElement(['Seminar', 'Vorlesung', 'Praktikum']),
+            'recommended_semester' => (string) fake()->numberBetween(5, 7),
+            'goals' => fake()->paragraphs(2, true),
+            'literature' => fake()->sentence(),
+            'media' => fake()->sentence(),
+            'tools' => fake()->sentence(),
+            'prerequisite_recommended' => fake()->sentence(),
+            'prerequisite_formal' => 'keine',
+            'total_hours_lectures' => fake()->numberBetween(30, 90),
+            'total_hours_self_study' => fake()->numberBetween(60, 120),
             'language' => fake()->randomElement(Language::cases()),
             'exam_type' => fake()->randomElement(ExamType::cases()),
+            'lecturer_name' => fake()->name(),
             'course_url' => fake()->url(),
         ];
     }
