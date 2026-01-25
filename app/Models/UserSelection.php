@@ -25,63 +25,39 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class UserSelection extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'semester_id',
-        'elective_type',
-        'elective_choice_id',
-        'parent_elective_choice_id',
-        'status',
-        'enrollment_type',
-    ];
-
     protected function casts(): array
     {
         return [
-            'semester_id' => 'integer',
-            'parent_elective_choice_id' => 'integer',
             'status' => EnrollmentStatus::class,
             'enrollment_type' => EnrollmentType::class,
         ];
     }
 
-    // Relationships
-
-    /**
-     * @return BelongsTo<User, $this>
-     */
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * @return BelongsTo<Semester, $this>
-     */
+    /** @return BelongsTo<Semester, $this> */
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
     }
 
-    /**
-     * @return MorphTo<Model, $this>
-     */
+    /** @return MorphTo<Model, $this> */
     public function elective(): MorphTo
     {
         return $this->morphTo('elective', 'elective_type', 'elective_choice_id');
     }
 
-    /**
-     * @return BelongsTo<UserSelection, $this>
-     */
+    /** @return BelongsTo<UserSelection, $this> */
     public function parentChoice(): BelongsTo
     {
         return $this->belongsTo(UserSelection::class, 'parent_elective_choice_id');
     }
 
-    /**
-     * @return HasMany<UserSelection, $this>
-     */
+    /** @return HasMany<UserSelection, $this> */
     public function childChoices(): HasMany
     {
         return $this->hasMany(UserSelection::class, 'parent_elective_choice_id');

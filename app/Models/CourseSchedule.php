@@ -37,17 +37,13 @@ class CourseSchedule extends Model
         ];
     }
 
-    /**
-     * @return MorphTo<Model, $this>
-     */
+    /** @return MorphTo<Model, $this> */
     public function schedulable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    /**
-     * @return Attribute<string, never>
-     */
+    /** @return Attribute<string, never> */
     protected function formattedSchedule(): Attribute
     {
         return Attribute::make(get: fn () => sprintf(

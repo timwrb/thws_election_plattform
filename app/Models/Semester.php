@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Season;
 use Database\Factories\SemesterFactory;
+use Filament\Support\Contracts\HasLabel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,17 +13,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $year
  * @property Season $season
  */
-class Semester extends Model
+class Semester extends Model implements HasLabel
 {
     /** @use HasFactory<SemesterFactory> */
     use HasFactory;
 
     public $timestamps = false;
-
-    protected $fillable = [
-        'year',
-        'season',
-    ];
 
     protected function casts(): array
     {

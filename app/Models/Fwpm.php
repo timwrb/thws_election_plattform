@@ -67,33 +67,25 @@ class Fwpm extends Model
         ];
     }
 
-    /**
-     * @return BelongsTo<User, $this>
-     */
+    /** @return BelongsTo<User, $this> */
     public function professor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'professor_id');
     }
 
-    /**
-     * @return MorphMany<CourseSchedule, $this>
-     */
+    /** @return MorphMany<CourseSchedule, $this> */
     public function schedules(): MorphMany
     {
         return $this->morphMany(CourseSchedule::class, 'schedulable');
     }
 
-    /**
-     * @return BelongsTo<Semester, $this>
-     */
+    /** @return BelongsTo<Semester, $this> */
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
     }
 
-    /**
-     * @return BelongsToMany<StudyProgram, $this>
-     */
+    /** @return BelongsToMany<StudyProgram, $this> */
     public function studyPrograms(): BelongsToMany
     {
         return $this->belongsToMany(StudyProgram::class, 'fwpm_study_program')
@@ -101,9 +93,7 @@ class Fwpm extends Model
             ->withTimestamps();
     }
 
-    /**
-     * @return Attribute<string, never>
-     */
+    /** @return Attribute<string, never> */
     protected function formattedSchedules(): Attribute
     {
         return Attribute::make(get: fn () => $this->schedules()
@@ -113,11 +103,7 @@ class Fwpm extends Model
             ->join(', '));
     }
 
-    /**
-     * Get the localized name based on app locale.
-     *
-     * @return Attribute<string, never>
-     */
+    /** @return Attribute<string, never> */
     protected function name(): Attribute
     {
         return Attribute::make(

@@ -42,32 +42,25 @@ class Awpf extends Model
     protected function casts(): array
     {
         return [
-            'credits' => 'integer',
             'language' => Language::class,
             'exam_type' => ExamType::class,
             'status' => ElectiveStatus::class,
         ];
     }
 
-    /**
-     * @return BelongsTo<User, $this>
-     */
+    /** @return BelongsTo<User, $this> */
     public function professor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'professor_id');
     }
 
-    /**
-     * @return MorphMany<CourseSchedule, $this>
-     */
+    /** @return MorphMany<CourseSchedule, $this> */
     public function schedules(): MorphMany
     {
         return $this->morphMany(CourseSchedule::class, 'schedulable');
     }
 
-    /**
-     * @return Attribute<string, never>
-     */
+    /** @return Attribute<string, never> */
     protected function formattedSchedules(): Attribute
     {
         return Attribute::make(get: fn () => $this->schedules()

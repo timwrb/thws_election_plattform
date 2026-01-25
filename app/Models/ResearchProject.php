@@ -43,57 +43,34 @@ class ResearchProject extends Model implements HasMedia
     use HasUuids;
     use InteractsWithMedia;
 
-    protected $fillable = [
-        'title',
-        'description',
-        'professor_id',
-        'creator_id',
-        'semester_id',
-        'credits',
-        'start_date',
-        'end_date',
-        'max_students',
-        'status',
-    ];
-
     protected function casts(): array
     {
         return [
-            'credits' => 'integer',
-            'max_students' => 'integer',
             'start_date' => 'date',
             'end_date' => 'date',
             'status' => ElectiveStatus::class,
         ];
     }
 
-    /**
-     * @return BelongsTo<User, $this>
-     */
+    /** @return BelongsTo<User, $this> */
     public function professor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'professor_id');
     }
 
-    /**
-     * @return BelongsTo<User, $this>
-     */
+    /** @return BelongsTo<User, $this> */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    /**
-     * @return BelongsTo<Semester, $this>
-     */
+    /** @return BelongsTo<Semester, $this> */
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
     }
 
-    /**
-     * @return HasMany<UserSelection, $this>
-     */
+    /** @return HasMany<UserSelection, $this> */
     public function enrollments(): HasMany
     {
         return $this->hasMany(UserSelection::class, 'elective_choice_id')

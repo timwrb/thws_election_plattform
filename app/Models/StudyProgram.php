@@ -40,25 +40,19 @@ class StudyProgram extends Model
         ];
     }
 
-    /**
-     * @return BelongsTo<StudyProgram, $this>
-     */
+    /** @return BelongsTo<StudyProgram, $this> */
     public function baseProgram(): BelongsTo
     {
         return $this->belongsTo(StudyProgram::class, 'base_program_id');
     }
 
-    /**
-     * @return HasMany<StudyProgram, $this>
-     */
+    /** @return HasMany<StudyProgram, $this> */
     public function dualVariants(): HasMany
     {
         return $this->hasMany(StudyProgram::class, 'base_program_id');
     }
 
-    /**
-     * @return BelongsToMany<Fwpm, $this>
-     */
+    /** @return BelongsToMany<Fwpm, $this> */
     public function fwpms(): BelongsToMany
     {
         return $this->belongsToMany(Fwpm::class, 'fwpm_study_program')

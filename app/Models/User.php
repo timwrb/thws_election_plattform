@@ -43,21 +43,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     use HasUuids;
     use InteractsWithMedia;
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -65,9 +56,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         ];
     }
 
-    /**
-     * @return Attribute<string, never>
-     */
+    /** @return Attribute<string, never> */
     protected function fullName(): Attribute
     {
         return Attribute::make(get: fn () => "$this->salutation $this->name $this->surname");
@@ -86,17 +75,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         return $panel->isDefault();
     }
 
-    /**
-     * @return HasMany<UserSelection, $this>
-     */
+    /** @return HasMany<UserSelection, $this> */
     public function selections(): HasMany
     {
         return $this->hasMany(UserSelection::class);
     }
 
-    /**
-     * @return Collection<int, UserSelection>
-     */
+    /** @return Collection<int, UserSelection> */
     public function selectionsForSemester(Semester $semester): Collection
     {
         return $this->selections()
@@ -105,9 +90,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->get();
     }
 
-    /**
-     * @return MorphToMany<Awpf, $this>
-     */
+    /** @return MorphToMany<Awpf, $this> */
     public function awpfSelections(): MorphToMany
     {
         return $this->morphedByMany(
@@ -121,9 +104,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->withTimestamps();
     }
 
-    /**
-     * @return MorphToMany<Fwpm, $this>
-     */
+    /** @return MorphToMany<Fwpm, $this> */
     public function fwpmSelections(): MorphToMany
     {
         return $this->morphedByMany(
@@ -137,9 +118,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->withTimestamps();
     }
 
-    /**
-     * @return MorphToMany<ResearchProject, $this>
-     */
+    /** @return MorphToMany<ResearchProject, $this> */
     public function researchProjectSelections(): MorphToMany
     {
         return $this->morphedByMany(
@@ -153,17 +132,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->withTimestamps();
     }
 
-    /**
-     * @return HasMany<ResearchProject, $this>
-     */
+    /** @return HasMany<ResearchProject, $this> */
     public function createdResearchProjects(): HasMany
     {
         return $this->hasMany(ResearchProject::class, 'creator_id');
     }
 
-    /**
-     * @return BelongsTo<Semester, $this>
-     */
+    /** @return BelongsTo<Semester, $this> */
     public function startSemester(): BelongsTo
     {
         return $this->belongsTo(Semester::class, 'start_semester_id');
@@ -214,9 +189,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->singleFile();
     }
 
-    /**
-     * Get initials from name and surname.
-     */
     public function getInitials(): string
     {
         $initials = mb_strtoupper(mb_substr($this->name, 0, 1));
